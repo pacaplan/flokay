@@ -1,6 +1,6 @@
-import { execSync } from "child_process";
+import { execSync, execFileSync } from "child_process";
 import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync, statSync } from "fs";
-import { join, dirname, resolve } from "path";
+import { join, resolve } from "path";
 
 // --- Types ---
 
@@ -73,23 +73,44 @@ function findManifest(): { path: string; dir: string } {
 
 function readManifest(manifestPath: string): Manifest {
   const raw = readFileSync(manifestPath, "utf-8");
-  return JSON.parse(raw) as Manifest;
+  let parsed: any;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    console.error(`Error: ${manifestPath} contains invalid JSON.`);
+    process.exit(1);
+  }
+  if (!parsed.target || !Array.isArray(parsed.sources)) {
+    console.error(`Error: ${manifestPath} is missing required fields "target" or "sources".`);
+    process.exit(1);
+  }
+  return parsed as Manifest;
 }
 
 // --- GitHub API Helpers ---
 
 function parseRepoUrl(repoUrl: string): { owner: string; repo: string } {
-  // Handles: https://github.com/owner/repo or https://github.com/owner/repo.git
-  const match = repoUrl.match(/github\.com\/([^/]+)\/([^/.]+)/);
-  if (!match) {
+  // Parse GitHub URLs by extracting path segments.
+  // Handles: https://github.com/owner/repo, https://github.com/owner/repo.git,
+  // repos with dots (owner/my.repo), and URLs with extra paths (/tree/main/...)
+  let pathname: string;
+  try {
+    pathname = new URL(repoUrl).pathname;
+  } catch {
     throw new Error(`Cannot parse repo URL: ${repoUrl}`);
   }
-  return { owner: match[1], repo: match[2] };
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length < 2) {
+    throw new Error(`Cannot parse repo URL: ${repoUrl}`);
+  }
+  const owner = segments[0];
+  const repo = segments[1].replace(/\.git$/, "");
+  return { owner, repo };
 }
 
 function ghApi(endpoint: string): string {
   try {
-    return execSync(`gh api "${endpoint}"`, {
+    return execFileSync("gh", ["api", endpoint], {
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     }).trim();
@@ -126,6 +147,9 @@ function downloadDirectory(
 
   const entries = fetchDirectoryContents(owner, repo, remotePath, ref);
   for (const entry of entries) {
+    if (entry.name.includes("..") || entry.name.includes("/")) {
+      throw new Error(`Unsafe filename in remote path: ${entry.name}`);
+    }
     const localPath = join(localDir, entry.name);
     if (entry.type === "dir") {
       fileCount += downloadDirectory(owner, repo, entry.path, ref, localPath);
@@ -169,7 +193,7 @@ function parseVersion(versionStr: string): number[] {
 function satisfiesSemverRange(installed: string, range: string): boolean {
   // Supports ^x.y.z (compatible with version) and exact x.y.z
   const installedParts = parseVersion(installed);
-  const cleanRange = range.replace(/^[\^~]/, "");
+  const cleanRange = range.replace(/^\^/, "");
   const rangeParts = parseVersion(cleanRange);
 
   if (range.startsWith("^")) {
@@ -196,7 +220,7 @@ function checkPrerequisites(source: Source): string[] {
 
   // Check if CLI exists
   try {
-    execSync(`which ${pkg}`, { stdio: ["pipe", "pipe", "pipe"] });
+    execFileSync("which", [pkg], { stdio: ["pipe", "pipe", "pipe"] });
   } catch {
     warnings.push(
       `Warning: Missing prerequisite: ${pkg} (required by source '${source.name}')\n` +
@@ -207,7 +231,7 @@ function checkPrerequisites(source: Source): string[] {
 
   // Check version
   try {
-    const versionOutput = execSync(`${pkg} --version`, {
+    const versionOutput = execFileSync(pkg, ["--version"], {
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     }).trim();
