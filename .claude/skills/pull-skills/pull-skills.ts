@@ -111,3 +111,48 @@ function fetchFileContent(owner: string, repo: string, path: string, ref: string
   }
   return Buffer.from(entry.content, "base64").toString("utf-8");
 }
+
+// --- Download Logic ---
+
+function downloadDirectory(
+  owner: string,
+  repo: string,
+  remotePath: string,
+  ref: string,
+  localDir: string
+): number {
+  let fileCount = 0;
+  mkdirSync(localDir, { recursive: true });
+
+  const entries = fetchDirectoryContents(owner, repo, remotePath, ref);
+  for (const entry of entries) {
+    const localPath = join(localDir, entry.name);
+    if (entry.type === "dir") {
+      fileCount += downloadDirectory(owner, repo, entry.path, ref, localPath);
+    } else {
+      const content = fetchFileContent(owner, repo, entry.path, ref);
+      writeFileSync(localPath, content, "utf-8");
+      fileCount++;
+    }
+  }
+  return fileCount;
+}
+
+function pullSkill(
+  owner: string,
+  repo: string,
+  basePath: string,
+  skillName: string,
+  ref: string,
+  targetDir: string
+): { files: number } | { error: string } {
+  const remotePath = `${basePath}/${skillName}`;
+  const localDir = join(targetDir, skillName);
+
+  try {
+    const files = downloadDirectory(owner, repo, remotePath, ref, localDir);
+    return { files };
+  } catch (err: any) {
+    return { error: err.message };
+  }
+}
