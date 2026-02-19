@@ -75,41 +75,53 @@ A `skill-manifest.json` file that tracks which skills have been pulled from whic
       "repo": "https://github.com/obra/superpowers",
       "path": "skills",
       "version": "v4.3.0",
-      "skills": ["brainstorming", "writing-plans", "test-driven-development"]
-    },
-    {
-      "name": "openspec",
-      "repo": "https://github.com/Fission-AI/OpenSpec",
-      "path": "src/commands",
-      "version": "v1.0.2",
-      "skills": ["spec", "design"],
-      "prerequisites": {
-        "cli": { "package": "@fission-ai/openspec", "version": "^1.0.2" }
-      }
+      "skills": ["brainstorming", "writing-plans", "subagent-driven-development"]
     },
     {
       "name": "agent-gauntlet",
       "repo": "https://github.com/pacaplan/agent-gauntlet",
-      "path": "skills",
+      "path": ".claude",
       "version": "v0.15.0",
-      "skills": ["gauntlet-run"],
+      "skills": ["gauntlet-run", "gauntlet-push-pr", "openspec/proposal"],
       "prerequisites": {
         "cli": { "package": "agent-gauntlet", "version": "^0.15.0" }
       }
     }
-  ]
+  ],
+  "prerequisites": {
+    "@fission-ai/openspec": "^1.0.2"
+  }
 }
 ```
 
 Sources fall into two categories:
 - **Pure skill sources** (e.g., Superpowers) — No `prerequisites`. Only skill files are pulled.
-- **Tool-backed sources** (e.g., OpenSpec, Agent Gauntlet) — Have a `prerequisites.cli` field specifying the npm package and version range. The skills pulled from these sources assume the CLI is available at runtime.
+- **Tool-backed sources** (e.g., Agent Gauntlet) — Have a `prerequisites.cli` field specifying the npm package and version range. The skills pulled from these sources assume the CLI is available at runtime.
+
+Prerequisites that aren't tied to a specific source (e.g., OpenSpec, whose CLI is needed but whose skills come through Agent Gauntlet's repo) can be listed at the top-level `prerequisites` field.
 
 Key design decisions:
 
 - **No git submodules or sparse clones.** Skills are small files (typically a single `SKILL.md`). Simple copy + manifest tracking is sufficient, and avoids the pain of submodules especially when local customizations are expected.
 - **Flat target directory.** All pulled skills land in a single directory regardless of source, so the agent discovers them uniformly without repo-specific nesting.
 - **No local modification tracking.** The manifest only stores the version/tag that was pulled. Local modifications are not recorded — they can be reconstructed on demand by diffing the local copy against the original at the stored version tag.
+
+### Self-Authored Skills
+
+The manifest only tracks skills pulled from external sources. **Self-authored skills are implicit** — any skill present in the target directory but not listed in the manifest is understood to be locally authored.
+
+This keeps the manifest focused on its core purpose: tracking external dependencies for upstream merging. The complete picture of available skills is simply the contents of the target directory.
+
+### Command-to-Skill Conversion
+
+Some upstream sources ship functionality as "commands" (single `.md` files in a `.claude/commands/` directory) rather than "skills" (directories with a `SKILL.md` file). Commands are a legacy pattern — skills are a superset of command functionality.
+
+The `pull` skill normalizes everything to skill format automatically:
+
+- **Source is a skill** (directory with `SKILL.md` + optional supporting files) → copy as-is
+- **Source is a command** (single `.md` file) → convert: create a directory, rename to `SKILL.md`, add YAML frontmatter (`name`, `description` parsed from existing content)
+
+The manifest doesn't need to distinguish between skills and commands at the source. It lists what you want by name, and `pull` handles format normalization. For example, `openspec/proposal` in the Agent Gauntlet source is a command — `pull` would produce an `openspec-proposal/SKILL.md` in the target directory.
 
 ### Three-Way Merge for Updates
 
@@ -124,11 +136,13 @@ This is a well-understood algorithm — the implementation can shell out to `git
 
 ### Two Skills: Discover and Pull
 
-- **`discover`** — Interactive. Takes a GitHub URL (including path), reads the repo structure, shows available skills, lets the user multi-select, and writes/updates the manifest.
-- **`pull`** — Deterministic. Reads the manifest and downloads the specified skill files via GitHub API, copying them to the target directory. After pulling, it checks all `prerequisites` entries in the manifest:
-  - Verifies each required CLI is installed (e.g., `which agent-gauntlet`)
-  - Verifies the installed version matches the range specified in the manifest
-  - **Warns** on missing or version-mismatched prerequisites but does **not** auto-install them
+- **`discover`** — Interactive. Takes a GitHub URL (including path), reads the repo structure, shows available skills and commands, lets the user multi-select, and writes/updates the manifest.
+- **`pull`** — Deterministic. Reads the manifest and downloads the specified skill files via GitHub API, copying them to the target directory. During pull:
+  - Normalizes commands to skill format automatically (see Command-to-Skill Conversion above)
+  - Checks all `prerequisites` entries in the manifest:
+    - Verifies each required CLI is installed (e.g., `which agent-gauntlet`)
+    - Verifies the installed version matches the range specified in the manifest
+    - **Warns** on missing or version-mismatched prerequisites but does **not** auto-install them
 
 For now, these skills live in `.claude/` at the root of this repo for immediate use. Eventually, they will ship as built-in Flokay capabilities.
 
