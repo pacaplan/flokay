@@ -156,28 +156,36 @@ Then continue to step 6 (Locate or create manifest) — this step is shared with
 
 ### 7. Update manifest
 
-Read the existing manifest (or start fresh). The manifest schema:
+Read the existing manifest (or start fresh). The manifest supports two source types:
 
+**Repo source:**
 ```json
 {
-  "target": "skills",
-  "sources": [
-    {
-      "name": "superpowers",
-      "repo": "https://github.com/obra/superpowers",
-      "path": "skills",
-      "version": "v4.3.0",
-      "skills": ["brainstorming", "writing-plans"]
-    }
-  ]
+  "name": "superpowers",
+  "repo": "https://github.com/obra/superpowers",
+  "path": "skills",
+  "version": "v4.3.0",
+  "skills": ["brainstorming", "writing-plans"]
+}
+```
+
+**Generate source:**
+```json
+{
+  "name": "openspec",
+  "type": "generate",
+  "package": "openspec",
+  "command": "openspec update --force .",
+  "version": "^1.2.0",
+  "skills": ["openspec-explore", "openspec-new-change", "openspec-archive-change"],
+  "installedVersion": "1.2.3"
 }
 ```
 
 Rules:
-- Source `name` defaults to the repo name (e.g., `superpowers` from `obra/superpowers`)
-- If a source with the same repo URL already exists, **merge** the new skills into its `skills` array (additive, deduplicated)
-- If a source with the same `name` but different repo URL exists, append the owner to disambiguate (e.g., `superpowers-obra`)
-- If this is a new source, append it to the `sources` array
+- **Repo sources:** `name` defaults to the repo name. If a source with the same repo URL already exists, **merge** skills (additive, deduplicated). If same `name` but different repo URL, append the owner to disambiguate.
+- **Generate sources:** `name` defaults to the package name. If a source with the same `package` already exists, **replace** it (the command or version may have changed).
+- If this is a new source of either type, append it to the `sources` array
 - Write the updated manifest back to disk
 
 ### 8. Confirm
@@ -199,6 +207,10 @@ Run pull-skills to download the skill files.
 - Duplicate skill selection → silently skip, don't add twice
 - URL without path → ask user for the subdirectory containing skills
 - GitHub API rate limit → inform user, suggest authenticating with `gh auth login`
+- Tool not installed → `which {tool}` fails. Tell the user to install it and stop.
+- `--help` not available → If `{tool} --help` fails, ask the user to describe the command manually.
+- Command fails → Show the error output and ask the user to adjust the command.
+- No skills generated → Command ran successfully but no SKILL.md directories found in target. Warn the user and ask if the command writes to a different directory.
 
 ## Important
 
