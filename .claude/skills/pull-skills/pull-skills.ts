@@ -457,6 +457,17 @@ function main() {
     }
   }
 
+  // Write back installedVersion for any generate sources that ran
+  if (generatedUpdates.length > 0) {
+    const rawManifest = readFileSync(manifestPath, "utf-8");
+    const parsed = JSON.parse(rawManifest);
+    for (const entry of generatedUpdates) {
+      parsed.sources[entry.sourceIndex].installedVersion = entry.version;
+    }
+    writeFileSync(manifestPath, JSON.stringify(parsed, null, 2) + "\n", "utf-8");
+    console.log("\nUpdated manifest with installed versions.");
+  }
+
   if (errors.length > 0) {
     process.exit(1);
   }
