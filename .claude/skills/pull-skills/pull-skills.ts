@@ -201,6 +201,61 @@ function pullSkill(
   }
 }
 
+// --- Generate Source ---
+
+function pullGenerateSource(
+  source: GenerateSource,
+  targetDir: string,
+  manifestDir: string
+): { generated: number; version: string } | { skipped: true } | { error: string } {
+  // 1. Check the CLI is installed and get its version
+  const installedVersion = getInstalledVersion(source.package);
+
+  if (installedVersion === null) {
+    return { error: `${source.package} is not installed` };
+  }
+
+  // 2. Check installed version satisfies the required range
+  if (!satisfiesSemverRange(installedVersion, source.version)) {
+    return {
+      error: `${source.package} ${installedVersion} does not satisfy required version ${source.version}`,
+    };
+  }
+
+  // 3. If installed version matches what we last generated with, skip
+  if (source.installedVersion && source.installedVersion === installedVersion) {
+    return { skipped: true };
+  }
+
+  // 4. Run the command from manifestDir
+  const parts = source.command.split(/\s+/);
+  const program = parts[0];
+  const args = parts.slice(1);
+
+  try {
+    execFileSync(program, args, {
+      cwd: manifestDir,
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+  } catch (err: any) {
+    const stderr = err.stderr ? err.stderr.toString().trim() : err.message;
+    return { error: `Command failed: ${source.command}\n${stderr}` };
+  }
+
+  // 5. Verify each skill exists as <targetDir>/<skillName>/SKILL.md
+  for (const skill of source.skills) {
+    const skillFile = join(targetDir, skill, "SKILL.md");
+    if (!existsSync(skillFile)) {
+      return {
+        error: `Expected skill file not found after generation: ${skillFile}`,
+      };
+    }
+  }
+
+  // 6. Return success with the installed version
+  return { generated: source.skills.length, version: installedVersion };
+}
+
 // --- Prerequisite Checking ---
 
 function parseVersion(versionStr: string): number[] {
