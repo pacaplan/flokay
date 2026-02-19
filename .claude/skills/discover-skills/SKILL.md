@@ -77,6 +77,73 @@ Available skills in obra/superpowers:
 Which skills would you like to add? (comma-separated numbers, or "all")
 ```
 
+## Generate Source Flow
+
+These steps apply when the input is a CLI tool name (not a GitHub URL).
+
+### 2G. Validate the tool
+
+Verify the tool is installed and get its version:
+
+```bash
+which {tool}
+{tool} --version
+```
+
+- If `which` fails → tell the user the tool is not installed and stop
+- If `--version` fails → warn, but continue (some tools may not support `--version`)
+- Extract the version number for use in step 4G
+
+### 3G. Understand the tool and agree on command
+
+Run the tool's help to understand available options:
+
+```bash
+{tool} --help
+```
+
+Read the help output and converse with the user to determine the correct command for generating skills. This is interactive:
+1. Read the `--help` output
+2. If a subcommand looks relevant, run `{tool} {subcommand} --help` for details
+3. Propose a command to the user
+4. Refine based on user feedback until both agree on the exact command
+
+The goal is to arrive at the full command string (e.g., `openspec update --force .`) that will be stored in the manifest.
+
+### 4G. Run the command and discover skills
+
+Run the agreed-upon command from the manifest directory:
+
+```bash
+{command}
+```
+
+After the command completes, scan the target directory for skill directories (directories containing a `SKILL.md` file). Present the discovered skills to the user:
+
+```
+Generated skills found:
+1. openspec-explore — Explore and understand change specifications
+2. openspec-new-change — Create a new change specification
+3. openspec-archive-change — Archive a completed change
+
+Are these correct? (edit or confirm)
+```
+
+The user can edit the list (remove skills they don't want tracked, or flag any that are missing).
+
+### 5G. Build the manifest entry
+
+Construct the generate source entry:
+- `name`: defaults to the tool name (e.g., `openspec`), ask user to confirm
+- `type`: `"generate"`
+- `package`: the tool name
+- `command`: the agreed-upon command from step 3G
+- `version`: auto-construct `^{major}.{minor}.0` from the installed version (e.g., installed `1.2.3` → `^1.2.0`), present to user for confirmation
+- `skills`: the confirmed list from step 4G
+- `installedVersion`: the full installed version string
+
+Then continue to step 6 (Locate or create manifest) — this step is shared with the repo flow.
+
 ### 6. Locate or create manifest
 
 **Manifest discovery:**
