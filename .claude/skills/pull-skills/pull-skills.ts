@@ -232,39 +232,66 @@ function satisfiesSemverRange(installed: string, range: string): boolean {
   );
 }
 
-function checkPrerequisites(source: Source): string[] {
-  const warnings: string[] = [];
-  if (!source.prerequisites?.cli) return warnings;
-
-  const { package: pkg, version: requiredVersion } = source.prerequisites.cli;
-
+function getInstalledVersion(pkg: string): string | null {
   // Check if CLI exists
   try {
     execFileSync("which", [pkg], { stdio: ["pipe", "pipe", "pipe"] });
   } catch {
-    warnings.push(
-      `Warning: Missing prerequisite: ${pkg} (required by source '${source.name}')\n` +
-      `  Install with: npm install -g ${pkg}@${requiredVersion}`
-    );
-    return warnings;
+    return null;
   }
 
-  // Check version
+  // Get version string
   try {
     const versionOutput = execFileSync(pkg, ["--version"], {
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     }).trim();
 
-    if (!satisfiesSemverRange(versionOutput, requiredVersion)) {
+    // Verify it contains a parseable version
+    const parts = parseVersion(versionOutput);
+    if (parts[0] === 0 && parts[1] === 0 && parts[2] === 0) {
+      return null;
+    }
+
+    return versionOutput;
+  } catch {
+    return null;
+  }
+}
+
+function checkPrerequisites(source: Source): string[] {
+  const warnings: string[] = [];
+  if (!source.prerequisites?.cli) return warnings;
+
+  const { package: pkg, version: requiredVersion } = source.prerequisites.cli;
+
+  const installedVersion = getInstalledVersion(pkg);
+
+  if (installedVersion === null) {
+    // Distinguish "not installed" from "can't determine version"
+    let isInstalled = false;
+    try {
+      execFileSync("which", [pkg], { stdio: ["pipe", "pipe", "pipe"] });
+      isInstalled = true;
+    } catch {}
+
+    if (!isInstalled) {
       warnings.push(
-        `Warning: Version mismatch: ${pkg} ${versionOutput} installed, requires ${requiredVersion} (source '${source.name}')\n` +
-        `  Update with: npm install -g ${pkg}@${requiredVersion}`
+        `Warning: Missing prerequisite: ${pkg} (required by source '${source.name}')\n` +
+        `  Install with: npm install -g ${pkg}@${requiredVersion}`
+      );
+    } else {
+      warnings.push(
+        `Warning: Could not determine version of ${pkg} (source '${source.name}')`
       );
     }
-  } catch {
+    return warnings;
+  }
+
+  if (!satisfiesSemverRange(installedVersion, requiredVersion)) {
     warnings.push(
-      `Warning: Could not determine version of ${pkg} (source '${source.name}')`
+      `Warning: Version mismatch: ${pkg} ${installedVersion} installed, requires ${requiredVersion} (source '${source.name}')\n` +
+      `  Update with: npm install -g ${pkg}@${requiredVersion}`
     );
   }
 
