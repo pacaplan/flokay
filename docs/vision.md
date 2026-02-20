@@ -1,19 +1,38 @@
 # Vision
 
-A monorepo containing two projects that together define and enforce a structured, spec-driven development workflow.
+A curated, spec-driven development workflow — assembled from the best upstream skills, orchestrated by [OpenSpec OPSX](https://github.com/fission-ai/OpenSpec), and packaged as an installable Claude Code plugin.
 
 ---
 
-## 1. Flokay
+## Flokay
 
-**A general-purpose workflow engine and skill aggregator for spec-driven development.**
+**A curated "perfect workflow" for spec-driven development.**
 
-Flokay has two responsibilities:
+Flokay assembles skills from multiple upstream sources ([Superpowers](https://github.com/obra/superpowers), [OpenSpec](https://github.com/fission-ai/OpenSpec), [Agent Gauntlet](https://github.com/pacaplan/agent-gauntlet), etc.), customizes them, and uses OpenSpec's OPSX workflow engine to orchestrate them. The output artifact is a **Claude Code plugin** (`.claude-plugin`) installable in any project.
 
-1. **Skill aggregation** — Curate skills from multiple upstream sources into a single collection, with support for local customizations and upstream merging.
-2. **Workflow orchestration** — Define and enforce the order in which those skills are executed, as a configurable state machine.
+### What Flokay Provides
 
-A typical Flokay setup: first use the skill management tools to pull in the skills you want, then define a workflow that orchestrates them.
+1. **Skill curation** — Pull skills from multiple upstream sources into a single collection, with local customizations and upstream merging via the skill manifest.
+2. **Custom workflow schema** — An OPSX custom schema defining Flokay's preferred development steps and prompts, which may differ significantly from OpenSpec's defaults.
+3. **Quality verification** — Agent Gauntlet integration for automated quality gates instead of a built-in reviewer.
+
+### Why OpenSpec OPSX for Orchestration
+
+The original vision for Flokay included building a custom workflow engine — a configurable state machine to define and enforce the order in which skills are executed. During research, we discovered that OpenSpec's new OPSX workflow system already provides this:
+
+- **Custom schemas** — Define any workflow steps with any dependency graph (DAG), custom prompts, and custom templates, all in a simple `schema.yaml` + `templates/` directory.
+- **Fluid iteration** — Actions, not phases. Update specs during implementation, go back and refine, no phase-locking.
+- **Filesystem state detection** — Artifact status determined by file existence, no external state store.
+- **Multi-editor support** — Works across Claude Code, Cursor, Windsurf via generated skills.
+- **Full customization** — Artifact IDs, prompts, templates, and dependency structure are all user-defined. No hardcoded expectations.
+
+Rather than rebuild this from scratch, Flokay defines a custom OPSX schema that implements its preferred workflow sequence and prompts.
+
+---
+
+## Original Workflow Vision
+
+> The following captures the original design thinking that motivated Flokay. The core principles still hold — OPSX happens to implement them.
 
 ### Problem
 
@@ -44,23 +63,11 @@ The experience should feel similar to transitioning between modes (e.g., Claude 
 
 ---
 
-## 2. Triflow
+## Skill Management
 
-**An implementation of a "perfect workflow" using Flokay.**
+Skill management is a core capability of Flokay. When someone installs Flokay, they first use the skill management features to set up their curated skill repository, and then the OPSX custom schema orchestrates those skills.
 
-A concrete workflow definition built on top of Flokay, based on [Superpowers](https://github.com/obra/superpowers) and [OpenSpec](https://github.com/fission-ai/OpenSpec) with the following modifications:
-
-- **Use Agent Gauntlet** instead of a built-in quality reviewer
-- **Don't commit the design doc** — transition to OpenSpec instead of implementation planning
-- **Use Flokay** to clearly define and enforce the workflow
-
-Triflow is the first consumer of Flokay — both its skill aggregation (to assemble a curated skill set from Superpowers, OpenSpec, etc.) and its workflow orchestration (to define and enforce the development sequence). The output artifact is a **Claude Code plugin** (`.claude-plugin`) installable in any project.
-
----
-
-## 3. Skill Management (Flokay Feature)
-
-Skill management is a core capability of Flokay, not a separate tool. When someone installs Flokay, they first use the skill management features to set up their curated skill repository, and then define their workflow states on top of those skills.
+> **Future note:** The skill discovery and management capability (discover, pull, manifest tracking) will eventually be extracted into a standalone utility. For now, it lives within the Flokay project.
 
 ### Skill Manifest
 
@@ -141,28 +148,32 @@ This is a well-understood algorithm — the implementation can shell out to `git
     - Verifies the installed version matches the range specified in the manifest
     - **Warns** on missing or version-mismatched prerequisites but does **not** auto-install them
 
-For now, these skills live in `.claude/` at the root of this repo for immediate use. Eventually, they will ship as built-in Flokay capabilities.
+For now, these skills live in `.claude/` at the root of this repo for immediate use.
 
 ---
 
-## Monorepo Structure
+## Project Structure
 
 ```
 flowkay/
-├── .claude/                 # discover + pull skills (interim location)
+├── .claude/                 # discover + pull skills, gauntlet skills
 ├── docs/                    # vision, architecture docs
-├── flokay/                  # the workflow engine + skill aggregator
-├── triflow/                 # the curated "perfect workflow"
-│   ├── skill-manifest.json
-│   ├── skills/              # pulled + customized skills
-│   │   ├── brainstorming/
-│   │   ├── writing-plans/
-│   │   └── ...
-│   └── .claude-plugin/      # plugin packaging output
-│       └── plugin.json
-└── ...
+├── skill-manifest.json      # tracks upstream skill sources
+├── skills/                  # pulled + customized skills
+│   ├── brainstorming/
+│   ├── writing-plans/
+│   ├── openspec-*/
+│   └── ...
+├── openspec/                # custom OPSX schema (workflow definition)
+│   └── schemas/
+│       └── flokay/
+│           ├── schema.yaml
+│           └── templates/
+└── .claude-plugin/          # plugin packaging output
+    └── plugin.json
 ```
 
-- **`flokay/`** — The workflow engine and skill aggregator. State machine definitions, transition logic, enforcement tooling, and skill management (discover, pull, update).
-- **`triflow/`** — The first concrete workflow. Uses Flokay's skill management to curate skills from upstream sources, customizes them, and packages the result as a Claude Code plugin.
-- **`.claude/`** — Temporary home for the discover and pull skills so they are usable immediately during development. These will eventually move into Flokay proper.
+- **`.claude/`** — Home for the discover and pull skills, plus gauntlet integration. The skill management capability will eventually be extracted into a standalone utility.
+- **`skills/`** — All pulled and customized skills, discovered uniformly by the agent.
+- **`openspec/schemas/flokay/`** — The custom OPSX schema defining Flokay's workflow steps, dependency graph, and prompts.
+- **`skill-manifest.json`** — Tracks which skills were pulled from which upstream sources at which versions.

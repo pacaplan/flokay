@@ -353,6 +353,35 @@ function checkPrerequisites(source: Source): string[] {
   return warnings;
 }
 
+// --- Metadata Comment ---
+
+function buildMetadataComment(source: Source): string {
+  const parts = [`pulled-skill`, `source: ${source.name}`];
+  if (isGenerateSource(source)) {
+    parts.push(`type: generate`);
+    parts.push(`package: ${source.package}`);
+    parts.push(`version: ${source.version}`);
+    if (source.installedVersion) {
+      parts.push(`installedVersion: ${source.installedVersion}`);
+    }
+  } else {
+    parts.push(`repo: ${source.repo}`);
+    parts.push(`path: ${source.path}`);
+    parts.push(`version: ${source.version}`);
+  }
+  return `<!-- ${parts.join(" | ")} -->`;
+}
+
+function prependMetadataToSkill(skillDir: string, comment: string): void {
+  const skillFile = join(skillDir, "SKILL.md");
+  if (!existsSync(skillFile)) return;
+
+  const content = readFileSync(skillFile, "utf-8");
+  // Remove any existing pulled-skill comment before prepending
+  const stripped = content.replace(/^<!--\s*pulled-skill\s*\|[^\n]*-->\n/, "");
+  writeFileSync(skillFile, comment + "\n" + stripped, "utf-8");
+}
+
 // --- Main ---
 
 function main() {
@@ -393,6 +422,14 @@ function main() {
 
       const result = pullGenerateSource(source, targetDir, manifestDir);
 
+      // Always ensure metadata comments are present on generate source skills
+      if (!("error" in result)) {
+        const comment = buildMetadataComment(source);
+        for (const skill of source.skills) {
+          prependMetadataToSkill(join(targetDir, skill), comment);
+        }
+      }
+
       if ("skipped" in result) {
         console.log(`  Up to date (${source.installedVersion})`);
       } else if ("error" in result) {
@@ -415,6 +452,8 @@ function main() {
           console.log(` FAILED`);
           errors.push(`  ${source.name}/${skill}: ${result.error}`);
         } else {
+          const comment = buildMetadataComment(source);
+          prependMetadataToSkill(join(targetDir, skill), comment);
           console.log(` ${result.files} files`);
           totalFiles += result.files;
           totalPulled++;
