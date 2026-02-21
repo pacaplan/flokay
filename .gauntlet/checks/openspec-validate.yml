@@ -1,0 +1,5 @@
+command: openspec validate --changes
+working_directory: .
+parallel: true
+run_in_ci: false
+run_locally: true

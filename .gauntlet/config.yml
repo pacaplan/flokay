@@ -14,10 +14,18 @@ cli:
 
 # entry_points configured by /gauntlet-setup
 entry_points:
-  - path: "."
+  - path: "src"
     checks: []
     reviews:
       - code-quality
+
+  - path: "openspec/changes"
+    exclude:
+      - "openspec/changes/archive"
+    checks:
+      - openspec-validate
+    reviews:
+      - artifact-review
 
 # -------------------------------------------------------------------
 # All settings below are optional. Uncomment and change as needed.
