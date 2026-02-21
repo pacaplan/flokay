@@ -25,33 +25,14 @@ artifacts:
       Keep it concise (1-2 pages). Focus on the "why" not the "how" -
       implementation details belong in design.md.
 
-      This is the foundation - specs, design, and tasks all build on this.
+      This is the foundation - design, spec and tasks all build on this.
     requires: []
 
   - id: design
     generates: design.md
     description: Technical design document with implementation details
     template: design.md
-    instruction: |
-      Use the brainstorming skill to create this artifact through
-      collaborative dialogue. The skill guides the process — exploring
-      context, asking clarifying questions, proposing approaches,
-      and presenting the design for approval.
-
-      Sections:
-      - **Context**: Background, current state, constraints, stakeholders
-      - **Goals / Non-Goals**: What this design achieves and explicitly excludes
-      - **Decisions**: Key technical choices with rationale (why X over Y?).
-        Include alternatives considered for each decision.
-      - **Risks / Trade-offs**: Known limitations, things that could go wrong.
-        Format: [Risk] → Mitigation
-      - **Migration Plan**: Steps to deploy, rollback strategy (if applicable)
-      - **Open Questions**: Outstanding decisions or unknowns to resolve
-
-      Focus on architecture and approach, not line-by-line implementation.
-      Reference the proposal for motivation and specs for requirements.
-
-      Good design docs explain the "why" behind technical decisions.
+    instruction: Use the brainstorming skill to create this artifact, using the proposal as the source of motivation and context.
     requires:
       - proposal
 
@@ -113,34 +94,8 @@ artifacts:
   - id: tasks
     generates: tasks.md
     description: Implementation checklist with trackable tasks
-    template: tasks.md
-    instruction: |
-      Create the task list that breaks down the implementation work.
-
-      **IMPORTANT: Follow the template below exactly.** The apply phase parses
-      checkbox format to track progress. Tasks not using `- [ ]` won't be tracked.
-
-      Guidelines:
-      - Group related tasks under ## numbered headings
-      - Each task MUST be a checkbox: `- [ ] X.Y Task description`
-      - Tasks should be small enough to complete in one session
-      - Order tasks by dependency (what must be done first?)
-
-      Example:
-      ```
-      ## 1. Setup
-
-      - [ ] 1.1 Create new module structure
-      - [ ] 1.2 Add dependencies to package.json
-
-      ## 2. Core Implementation
-
-      - [ ] 2.1 Implement data export function
-      - [ ] 2.2 Add CSV formatting utilities
-      ```
-
-      Reference specs for what needs to be built, design for how to build it.
-      Each task should be verifiable - you know when it's done.
+    template: tasks.json
+    instruction: Use the writing-tasks skill to create this artifact.
     requires:
       - specs
 
@@ -165,5 +120,6 @@ apply:
   requires: [review]
   tracks: tasks.md
   instruction: |
-    Read context files, work through pending tasks, mark complete as you go.
-    Pause if you hit blockers or need clarification.
+    Read tasks.md (JSON). Iterate groups and tasks in order. For each task where
+    `completed` is false, read its task file, implement the work, then set
+    `"completed": true` in tasks.md. Pause if you hit blockers or need clarification.
