@@ -42,13 +42,13 @@ Orchestrate subagent-driven task implementation for an OpenSpec change.
       ```
 
       **Important**:
-      - Do NOT read the task file contents — the subagent reads it
       - Each task gets a FRESH subagent (do not resume previous ones)
       - Do NOT use `isolation: "worktree"` — subagent works on the current branch
 
    d. **Handle response**:
       - **Success**: Mark the task complete by setting `"completed": true` in the tasks file JSON. Show progress: "Task N/M complete"
-      - **Failure**: Do NOT mark the task complete. Pause and ask the user for guidance:
+      - **Failure with questions**: Read the task file to understand context, answer what you can from the change artifacts, and retry with a fresh subagent including the answers
+      - **Failure (blocker)**: Do NOT mark the task complete. Pause and ask the user for guidance:
         - Skip this task and continue
         - Retry with a fresh subagent
         - Manual intervention
@@ -84,7 +84,6 @@ Task 2/3 complete
 
 **Guardrails**
 - One fresh subagent per task — never resume a previous subagent
-- Never read task file contents in the main agent — pass the path to the subagent
 - Mark completion immediately after successful subagent return
 - Pause on any failure — never skip tasks silently
 - Process tasks in order as defined in the tasks file

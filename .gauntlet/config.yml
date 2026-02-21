@@ -2,7 +2,7 @@
 cli:
   default_preference:
     - codex
-    - claude
+    # - claude
   # Recommended settings (see docs/eval-results.md)
   adapters:
     codex:
