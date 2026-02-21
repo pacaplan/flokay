@@ -35,9 +35,10 @@ Archive a completed change in the experimental workflow.
 
 3. **Check task completion status**
 
-   Read the tasks file (typically `tasks.md`) to check for incomplete tasks.
+   Read the tasks file (`tasks.json` if present, falling back to `tasks.md`) to check for incomplete tasks.
 
-   Count tasks marked with `- [ ]` (incomplete) vs `- [x]` (complete).
+   For JSON format (`tasks.json`): count tasks where `"completed": false` (incomplete) vs `"completed": true` (complete).
+   For markdown format (`tasks.md`): count tasks marked with `- [ ]` (incomplete) vs `- [x]` (complete).
 
    **If incomplete tasks found:**
    - Display warning showing count of incomplete tasks

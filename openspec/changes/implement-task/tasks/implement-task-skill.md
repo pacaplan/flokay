@@ -19,10 +19,10 @@ The implement-task skill turns the apply phase from "main agent implements every
   # Current Task Context
 
   ## Task File
-  <path to the task file>
+  [Insert the actual path of the task file here]
 
   ## Task Content
-  <full content of the task file — Goal, Background, Spec, Done When>
+  [Insert the full content of the task file here, including Goal, Background, Spec, and Done When]
   ```
 - **Decision 7 (TDD when testable):** Red-green-refactor is mandatory for testable tasks (tasks with behavioral scenarios). Pure infrastructure tasks (markdown, config) may skip TDD but still go through self-review and gauntlet.
 - **Decision 8 (Apply becomes dispatcher):** The existing `/opsx:apply` retains steps 1-5 (select change, check status, get instructions, read context, show progress). Step 6 changes from inline implementation to dispatching implement-task per task.
@@ -41,7 +41,7 @@ The implement-task skill turns the apply phase from "main agent implements every
   4. Show final status
 
 - `.claude/skills/implement-task/implementer-prompt.md` — The subagent's full instruction set (prompt template, NOT a skill). Contains:
-  1. Role + task file path — "You are implementing a single task. Read <path>."
+  1. Role + task file path — "You are implementing a single task. Read the task file at the provided path."
   2. TDD methodology — red-green-refactor cycle per scenario. Reference the `test-driven-development` skill at `.claude/skills/test-driven-development/SKILL.md` if available.
   3. Implementation rules — implement exactly what the task specifies, no more, no less
   4. Self-review checklist — verify all scenarios covered, no extra work, Done When met, tests pass
