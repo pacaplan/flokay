@@ -51,7 +51,7 @@ Flokay's architecture is four distinct layers, each with a clean separation of c
 │  process, quality bar, analytical approach. Forked from upstream  │
 │  sources (Superpowers, etc.) and customized to:                   │
 │    - Write to OpenSpec's outputPath (not their own hardcoded path)│
-│    - Emit the format OpenSpec expects (e.g. checkbox tasks.md)    │
+│    - Emit the format OpenSpec expects (e.g. tasks.json)           │
 │    - Remove internal sequencing (OPSX owns that now)              │
 │                                                                   │
 │  brainstorming → proposal.md                                      │
@@ -107,7 +107,7 @@ This loop repeats until the task list is exhausted. Each subagent gets a full co
 ## Project Structure
 
 ```
-flowkay/
+flokay/
 ├── .claude/                 # discover + pull skills, gauntlet skills
 ├── docs/                    # vision, architecture docs
 ├── skill-manifest.json      # tracks upstream skill sources

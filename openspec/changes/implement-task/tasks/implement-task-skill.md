@@ -37,7 +37,7 @@ The implement-task skill turns the apply phase from "main agent implements every
 - `.claude/skills/implement-task/SKILL.md` — The orchestrator skill. Front matter follows existing skill patterns (name, description). Body describes the dispatch loop:
   1. Receive the change name and tasks list from the apply skill
   2. Pre-flight: ensure on non-main branch (create `implement/<change-name>` if needed)
-  3. For each pending task (in order): dispatch a fresh Sonnet subagent via `Task` tool, handle success (mark complete in tasks.md JSON, show progress) or failure (pause, ask user)
+  3. For each pending task (in order): dispatch a fresh Sonnet subagent via `Task` tool, handle success (mark complete in tasks.json JSON, show progress) or failure (pause, ask user)
   4. Show final status
 
 - `.claude/skills/implement-task/implementer-prompt.md` — The subagent's full instruction set (prompt template, NOT a skill). Contains:
@@ -89,21 +89,21 @@ The implement-task skill turns the apply phase from "main agent implements every
 - `.gitignore` — Add `.gauntlet/current-task-context.md` (ephemeral file rewritten before each gauntlet run).
 
 **Important conventions:**
-- The tasks file is `tasks.md` in the change directory (JSON format despite the `.md` extension). Mark completion by setting `"completed": true` for the task entry.
+- The tasks file is `tasks.json` in the change directory. Mark completion by setting `"completed": true` for the task entry.
 - The subagent prompt should be self-contained — paste the implementer-prompt.md content into the Task tool's `prompt` parameter, substituting the task file path.
 
 ## Spec
 
 ### Requirement: Sequential task dispatch via subagent
-The system SHALL dispatch one fresh implementer subagent per task, processing tasks in the order defined in tasks.md. The subagent SHALL use the Sonnet model. The main agent SHALL NOT read task file contents — it passes the task file path to the subagent, which reads it.
+The system SHALL dispatch one fresh implementer subagent per task, processing tasks in the order defined in tasks.json. The subagent SHALL use the Sonnet model. The main agent SHALL NOT read task file contents — it passes the task file path to the subagent, which reads it.
 
 #### Scenario: Single task dispatched to subagent
-- **WHEN** the apply skill encounters a pending task in tasks.md
+- **WHEN** the apply skill encounters a pending task in tasks.json
 - **THEN** it dispatches a fresh implementer subagent (model: sonnet) with the implementer-prompt.md instructions and the task file path
 
 #### Scenario: Tasks processed in order
-- **WHEN** multiple tasks are pending in tasks.md
-- **THEN** the apply skill dispatches them sequentially in tasks.md order, waiting for each subagent to return before dispatching the next
+- **WHEN** multiple tasks are pending in tasks.json
+- **THEN** the apply skill dispatches them sequentially in tasks.json order, waiting for each subagent to return before dispatching the next
 
 #### Scenario: Fresh subagent per task
 - **WHEN** a task completes (success or failure) and another task is pending
@@ -169,11 +169,11 @@ The implementer subagent SHALL invoke `agent-gauntlet run` via Bash after implem
 - **THEN** the implementer returns failure to the coordinator with details on what passed, what failed, and what was attempted
 
 ### Requirement: Task completion tracking
-The main agent SHALL update tasks.md to reflect task completion after a successful subagent return.
+The main agent SHALL update tasks.json to reflect task completion after a successful subagent return.
 
 #### Scenario: Task marked complete on success
 - **WHEN** the implementer subagent returns success
-- **THEN** the main agent sets `completed: true` for that task in tasks.md and displays progress
+- **THEN** the main agent sets `completed: true` for that task in tasks.json and displays progress
 
 #### Scenario: Task not marked complete on failure
 - **WHEN** the implementer subagent returns failure

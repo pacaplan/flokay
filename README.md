@@ -9,7 +9,7 @@ See [`docs/vision/README.md`](docs/vision/README.md) for the full design.
 ## Project Structure
 
 - **`.claude/`** — Skills (OpenSpec, Gauntlet, and project-management skills)
-- **`openspec/schemas/flokay/`** — The custom OPSX schema defining Flokay's workflow (proposal → design → specs → tasks)
+- **`openspec/schemas/flokay/`** — The custom OPSX schema defining Flokay's workflow (proposal → design → specs → tasks → review)
 - **`openspec/config.yaml`** — Sets `flokay` as the default schema for this project
 - **`skill-manifest.json`** — Tracks upstream skill sources and versions
 - **`docs/`** — Vision and architecture documentation

@@ -122,7 +122,7 @@ The implementer returns a natural language report (matching superpowers pattern)
 │  │   └────────────────────────────────────────────────────┘
 │  │
 │  │   Handle subagent response:
-│  │   ├── Success? → mark task complete in tasks.md
+│  │   ├── Success? → mark task complete in tasks.json
 │  │   └── Failure? → pause, ask user for guidance
 │  │
 │  ├── Show progress: "Task N/M complete ✓"

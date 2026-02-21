@@ -272,11 +272,25 @@ function satisfiesSemverRange(installed: string, range: string): boolean {
   const rangeParts = parseVersion(cleanRange);
 
   if (range.startsWith("^")) {
-    // ^x.y.z: major must match, installed >= range
-    if (installedParts[0] !== rangeParts[0]) return false;
-    if (installedParts[1] > rangeParts[1]) return true;
-    if (installedParts[1] < rangeParts[1]) return false;
-    return installedParts[2] >= rangeParts[2];
+    if (rangeParts[0] !== 0) {
+      // ^1.2.3 := >=1.2.3, <2.0.0
+      if (installedParts[0] !== rangeParts[0]) return false;
+      if (installedParts[1] > rangeParts[1]) return true;
+      if (installedParts[1] < rangeParts[1]) return false;
+      return installedParts[2] >= rangeParts[2];
+    } else if (rangeParts[1] !== 0) {
+      // ^0.2.3 := >=0.2.3, <0.3.0
+      if (installedParts[0] !== 0) return false;
+      if (installedParts[1] !== rangeParts[1]) return false;
+      return installedParts[2] >= rangeParts[2];
+    } else {
+      // ^0.0.3 := >=0.0.3, <0.0.4
+      return (
+        installedParts[0] === 0 &&
+        installedParts[1] === 0 &&
+        installedParts[2] === rangeParts[2]
+      );
+    }
   }
 
   // Exact match
