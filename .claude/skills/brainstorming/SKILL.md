@@ -1,7 +1,7 @@
-<!-- pulled-skill | source: superpowers | repo: https://github.com/obra/superpowers | path: skills | version: v4.3.0 -->
+<!-- pulled-skill | source: superpowers | repo: https://github.com/obra/superpowers | path: skills | version: v4.3.0 | forked: true -->
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "Collaborative dialogue skill for creating design artifacts. Explores approaches, architecture, and trade-offs through conversation before writing the design document."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -28,8 +28,7 @@ You MUST create a task for each of these items and complete them in order:
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Write design doc** — save to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit
-6. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+5. **Write the design document** — write to the outputPath provided by the caller
 
 ## Process Flow
 
@@ -41,7 +40,6 @@ digraph brainstorming {
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
     "Write design doc" [shape=box];
-    "Invoke writing-plans skill" [shape=doublecircle];
 
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
@@ -49,11 +47,8 @@ digraph brainstorming {
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
     "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Invoke writing-plans skill";
 }
 ```
-
-**The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
 
 ## The Process
 
@@ -76,16 +71,9 @@ digraph brainstorming {
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
 
-## After the Design
+## After Approval
 
-**Documentation:**
-- Write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
-- Use elements-of-style:writing-clearly-and-concisely skill if available
-- Commit the design document to git
-
-**Implementation:**
-- Invoke the writing-plans skill to create a detailed implementation plan
-- Do NOT invoke any other skill. writing-plans is the next step.
+Write the design document to the outputPath provided by the caller (e.g., the OpenSpec change directory). Use the template structure provided. The caller (e.g., openspec-continue-change) owns what happens next — this skill does not invoke other skills or manage sequencing.
 
 ## Key Principles
 

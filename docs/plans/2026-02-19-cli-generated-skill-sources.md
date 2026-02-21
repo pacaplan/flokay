@@ -159,7 +159,7 @@ feat: write back installedVersion to manifest after generation
 ### Task 6: Update `vision.md`
 
 **Files:**
-- Modify: `docs/vision.md:65-147` (Skill Management section)
+- Modify: `docs/vision/skill-management.md` (Skill Management section)
 
 **Step 1: Update the manifest example**
 
