@@ -5,7 +5,7 @@
       "id": 1,
       "title": "Implement-task skill with gauntlet integration and apply wiring",
       "file": "tasks/implement-task-skill.md",
-      "completed": false
+      "completed": true
     }
   ]
 }

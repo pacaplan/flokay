@@ -65,20 +65,21 @@ Implement tasks from an OpenSpec change.
    - Remaining tasks overview
    - Dynamic instruction from CLI
 
-6. **Implement tasks (loop until done or blocked)**
+6. **Delegate implementation to implement-task skill**
 
-   For each pending task:
-   - Show which task is being worked on
-   - Make the code changes required
-   - Keep changes minimal and focused
-   - Mark task complete in the tasks file (set `"completed": true` in the task's JSON entry)
-   - Continue to next task
+   Read the implement-task skill at `.claude/skills/implement-task/SKILL.md` and follow its dispatch protocol:
 
-   **Pause if:**
-   - Task is unclear → ask for clarification
-   - Implementation reveals a design issue → suggest updating artifacts
-   - Error or blocker encountered → report and wait for guidance
-   - User interrupts
+   a. **Branch pre-flight**: If on main/master, create and checkout `implement/<change-name>`
+   b. **Dispatch loop**: For each pending task, dispatch a fresh Sonnet subagent using the Task tool:
+      - `subagent_type: "general-purpose"`
+      - `model: "sonnet"`
+      - Prompt: contents of `.claude/skills/implement-task/implementer-prompt.md` with `TASK_FILE_PATH` replaced by the actual task file path
+      - Do NOT use `isolation: "worktree"` — subagent works on current branch
+      - Do NOT read task file contents — pass the path to the subagent
+   c. **Handle responses**:
+      - Success: set `"completed": true` in the tasks file JSON, show progress
+      - Failure: do NOT mark complete, pause and ask user (skip / retry / manual)
+   d. Each task gets a FRESH subagent (never resume a previous one)
 
 7. **On completion or pause, show status**
 

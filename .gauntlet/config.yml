@@ -20,6 +20,7 @@ entry_points:
     checks: []
     reviews:
       - code-quality
+      - task-compliance
 
   - path: "openspec/changes"
     exclude:

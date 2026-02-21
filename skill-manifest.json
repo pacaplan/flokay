@@ -7,7 +7,8 @@
       "path": "skills",
       "version": "v4.3.0",
       "skills": [
-        "brainstorming"
+        "brainstorming",
+        "test-driven-development"
       ]
     },
     {
