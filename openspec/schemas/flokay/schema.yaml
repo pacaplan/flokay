@@ -44,13 +44,13 @@ artifacts:
 
   - id: tasks
     requires: [specs]
-    template: tasks.json
-    generates: tasks.json
+    template: tasks.md
+    generates: tasks.md
     description: Implementation checklist with trackable tasks
     instruction: |
       IMPORTANT: You MUST use the `plan-tasks` skill for this step.
       Create this artifact following the plan-tasks skill protocol.
-      When done, tell the user the relative path of tasks.json and all individual task files created.
+      When done, tell the user the relative path of tasks.md and all individual task files created.
 
   - id: review
     requires: [tasks]
@@ -66,11 +66,11 @@ artifacts:
 
 apply:
   requires: [review]
-  tracks: tasks.json
+  tracks: tasks.md
   instruction: |
     IMPORTANT: You MUST use the `implement-task` skill for this step.
     Follow the `implement-task` skill to dispatch subagents and execute the pending tasks.
-    Read tasks.json for context. For each task where `completed` is false,
+    Read tasks.md for context. For each unchecked task (`- [ ]`),
     the implement-task skill will handle dispatching a subagent to implement
-    the work and setting `"completed": true` in tasks.json.
+    the work and marking it complete (`- [x]`) in tasks.md.
     Pause if you hit blockers or need clarification.

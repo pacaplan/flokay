@@ -51,7 +51,7 @@ Flokay's architecture is four distinct layers, each with a clean separation of c
 │  process, quality bar, analytical approach. Forked from upstream  │
 │  sources (Superpowers, etc.) and customized to:                   │
 │    - Write to OpenSpec's outputPath (not their own hardcoded path)│
-│    - Emit the format OpenSpec expects (e.g. tasks.json)           │
+│    - Emit the format OpenSpec expects (e.g. tasks.md)             │
 │    - Remove internal sequencing (OPSX owns that now)              │
 │                                                                   │
 │  brainstorming → proposal.md                                      │

@@ -26,7 +26,7 @@ Plugin skill SKILL.md files SHALL NOT include a `name` field in their YAML front
 - **THEN** Claude Code resolves it as `flokay:<directory-name>`
 
 ### Requirement: Schema bundled in plugin
-The plugin SHALL include the flokay OPSX schema at `openspec/schemas/flokay/` containing `schema.yaml` and all template files (`proposal.md`, `design.md`, `spec.md`, `tasks.json`).
+The plugin SHALL include the flokay OPSX schema at `openspec/schemas/flokay/` containing `schema.yaml` and all template files (`proposal.md`, `design.md`, `spec.md`, `tasks.md`).
 
 #### Scenario: Schema files are present in plugin
 - **WHEN** the plugin is installed

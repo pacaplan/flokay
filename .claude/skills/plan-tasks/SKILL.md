@@ -179,31 +179,16 @@ Order tasks so each one is ready to start when the previous finishes. A task is 
 
 ---
 
-## 6. Write tasks.json
+## 6. Write tasks.md
 
-With ordering settled, write the JSON index at `<outputPath>/tasks.json`.
+With ordering settled, write the task index at `<outputPath>/tasks.md`.
 
-```json
-{
-  "change": "<change-name>",
-  "tasks": [
-    {
-      "id": 1,
-      "title": "<Task title>",
-      "file": "tasks/<slug>.md",
-      "completed": false
-    },
-    {
-      "id": 2,
-      "title": "<Task title>",
-      "file": "tasks/<slug>.md",
-      "completed": false
-    }
-  ]
-}
+```markdown
+- [ ] <Task title> (`tasks/<slug>.md`)
+- [ ] <Task title> (`tasks/<slug>.md`)
 ```
 
-The `id` values reflect the final execution order. The applying agent marks tasks complete by setting `"completed": true`.
+One checkbox line per task, in execution order. The parenthesized path links to the detailed task file. The applying agent marks tasks complete by changing `[ ]` to `[x]`.
 
 ---
 
@@ -213,7 +198,7 @@ Exit cleanly. Do not ask about execution mode. Do not invoke other skills. The c
 
 Show a brief summary:
 - How many task files were created and their titles
-- The path to tasks.json
+- The path to tasks.md
 - What's now unlocked
 
 ---
@@ -240,26 +225,11 @@ Requirements 4–5 (rate limiting, audit logging) are cross-cutting concerns lay
 
 **Result: 2 tasks.**
 
-### tasks.json
+### tasks.md
 
-```json
-{
-  "change": "csv-export",
-  "tasks": [
-    {
-      "id": 1,
-      "title": "ExportService + POST /exports endpoint",
-      "file": "tasks/export-service-endpoint.md",
-      "completed": false
-    },
-    {
-      "id": 2,
-      "title": "Rate limiting and audit logging",
-      "file": "tasks/rate-limiting-audit-log.md",
-      "completed": false
-    }
-  ]
-}
+```markdown
+- [ ] ExportService + POST /exports endpoint (`tasks/export-service-endpoint.md`)
+- [ ] Rate limiting and audit logging (`tasks/rate-limiting-audit-log.md`)
 ```
 
 ### Task 1 file

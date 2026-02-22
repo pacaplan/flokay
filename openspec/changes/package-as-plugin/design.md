@@ -46,7 +46,7 @@ flokay/
 │           ├── proposal.md
 │           ├── design.md
 │           ├── spec.md
-│           └── tasks.json
+│           └── tasks.md
 ├── LICENSE                          ← MIT
 ├── README.md                        ← new: user-facing
 ├── docs/
