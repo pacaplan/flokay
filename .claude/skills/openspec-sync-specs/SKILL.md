@@ -1,4 +1,3 @@
-<!-- pulled-skill | source: openspec | type: generate | package: openspec | version: ^1.1.0 | installedVersion: 1.1.1 -->
 ---
 name: openspec-sync-specs
 description: Sync delta specs from a change to main specs. Use when the user wants to update main specs with changes from a delta spec, without archiving the change.

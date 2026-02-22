@@ -7,29 +7,9 @@
       "path": "skills",
       "version": "v4.3.0",
       "skills": [
-        "brainstorming",
+        "design",
         "test-driven-development"
       ]
-    },
-    {
-      "name": "openspec",
-      "type": "generate",
-      "package": "openspec",
-      "command": "openspec update --force .",
-      "version": "^1.1.0",
-      "skills": [
-        "openspec-explore",
-        "openspec-new-change",
-        "openspec-continue-change",
-        "openspec-apply-change",
-        "openspec-ff-change",
-        "openspec-sync-specs",
-        "openspec-archive-change",
-        "openspec-bulk-archive-change",
-        "openspec-verify-change",
-        "openspec-onboard"
-      ],
-      "installedVersion": "1.1.1"
     }
   ]
 }

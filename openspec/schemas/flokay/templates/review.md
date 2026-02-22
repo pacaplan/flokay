@@ -1,12 +1,18 @@
+<!--
+  REVIEW TEMPLATE
+  This file summarizes the results of running the gauntlet-run skill.
+  Fill in each section after the gauntlet reaches a terminal status.
+-->
+
 # Review: {{change_name}}
 
 ## Summary
 
-<!-- One paragraph: pass/fail, overall quality assessment -->
+<!-- One paragraph: did it pass? What's the overall quality assessment of the artifacts? -->
 
 ## Issues Fixed
 
-<!-- Violations fixed during the retry loop. If none, state "None." -->
+<!-- Violations that were fixed during the retry loop. If none, state "None." -->
 
 ## Issues Skipped
 
@@ -18,4 +24,6 @@
 
 ## Sign-off
 
-<!-- APPROVED or BLOCKED with reasoning -->
+<!-- APPROVED if the gauntlet passed (with or without warnings).
+     BLOCKED if retry limit was exceeded, listing what must be addressed
+     before implementation can proceed. -->

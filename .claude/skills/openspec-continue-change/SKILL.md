@@ -1,4 +1,3 @@
-<!-- pulled-skill | source: openspec | type: generate | package: openspec | version: ^1.1.0 | installedVersion: 1.1.1 -->
 ---
 name: openspec-continue-change
 description: Continue working on an OpenSpec change by creating the next artifact. Use when the user wants to progress their change, create the next artifact, or continue their workflow.

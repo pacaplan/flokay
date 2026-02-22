@@ -1,10 +1,10 @@
 <!-- pulled-skill | source: superpowers | repo: https://github.com/obra/superpowers | path: skills | version: v4.3.0 | forked: true -->
 ---
-name: writing-tasks
+name: plan-tasks
 description: Creates a structured implementation task breakdown for an OpenSpec change, synthesizing proposal, design, and specs into self-contained per-task files. Use when the tasks artifact is the next step in an OpenSpec change.
 ---
 
-# Writing Tasks
+# Plan Tasks
 
 ## Overview
 
@@ -12,7 +12,7 @@ Write a structured task breakdown for an OpenSpec change. Each task gets its own
 
 Assume the implementing subagent is a skilled developer with zero context about this codebase, this decision history, or this feature — they won't know which files to touch, what conventions we've settled on, or why a particular approach was chosen unless you tell them. Give them everything they need — and only what they need — for their specific task. DRY. YAGNI. No line-by-line implementation instructions; describe what to build and the constraints that matter, not how to write each line.
 
-**Announce at start:** "I'm using the writing-tasks skill to create the task breakdown."
+**Announce at start:** "I'm using the plan-tasks skill to create the task breakdown."
 
 ---
 
@@ -32,6 +32,7 @@ Explore the existing code relevant to this change. You need to understand:
 - Which files and modules will be touched
 - Current structure, interfaces, and conventions the implementation must follow
 - Whether any existing code is tangled or poorly abstracted enough that the new work would be significantly harder to implement as-is
+- Whether any existing documentation (README, guides, config references, etc.) will need updating as a result of this change
 
 **Decide now if a refactoring task is needed.** If implementation would require working around serious structural obstacles in the current code, you'll prepend a standalone refactoring task in Step 5. This task restructures existing code without changing behavior, so the feature work lands cleanly. It is not a default step — add it only when genuinely warranted. When in doubt, skip it; the implementing subagent can refactor inline as needed.
 
@@ -69,6 +70,8 @@ For small changes, a single task is fine. Don't manufacture fake granularity.
 
 **Anti-pattern: "Laying the groundwork"**. Infrastructure that exists purely to enable another task (e.g., "Set up the Gauntlet infra that Task 2 needs," "Add the module skeleton") should be folded into that dependent task. If a task produces no testable behavioral value of its own, it is a sign it should be merged into the task that actually exercises it. The exception is database migrations or dependency changes risky enough to review on their own.
 
+**Anti-pattern: Separate doc-update tasks.** Don't create standalone tasks for documentation updates (README, guides, license files, etc.) when the docs are part of the same change as code or config. Update docs in the same task that introduces the related functionality. Only split docs into their own task when the documentation work is substantial and independent of any code change (e.g., a docs-only change).
+
 **Litmus test for infrastructure/config-only changes:** If all files being created/modified are prompt files, config files, skill definitions, or other non-compiled artifacts (no application code with runtime behavior), the entire change is likely one task. Prompt/config changes don't have the layer boundaries that justify splitting — they're all "infrastructure" in the same sense. Only split when tasks produce independently valuable, releasable functionality.
 ---
 
@@ -78,7 +81,35 @@ For each task you identified, write a self-contained `<slug>.md` file in `tasks/
 
 **slug**: 2–4 word kebab-case summary (e.g., `export-service-endpoint`, `rate-limiting-audit-log`)
 
-### Task file format
+### Single-task changes
+
+When the entire change is one task, reference the design and spec docs by path rather than duplicating them. No `## Spec` section needed. The task file needs **Goal**, **Background**, and **Done When**.
+
+In Background, list every file the implementer MUST read using exact relative paths. Do NOT use globs or vague references like "See `specs/`" — if a file isn't listed, it won't be read.
+
+**Example:**
+```markdown
+# Task: Package as Plugin
+
+## Goal
+
+Restructure the repository as a Claude Code plugin with skills, schema, init scaffolding, and documentation.
+
+## Background
+
+You MUST read these files before starting:
+- `design.md` for full design details
+- `specs/plugin-packaging/spec.md` for plugin structure and init skill acceptance criteria
+- `specs/skill-decoupling/spec.md` for skill decoupling acceptance criteria
+
+The proposal motivation is <brief "why" context if helpful>.
+
+## Done When
+
+All spec scenarios pass review. The plugin installs and skills are invocable.
+```
+
+### Multi-task file format
 
 ```markdown
 # Task: <Title>
@@ -148,31 +179,16 @@ Order tasks so each one is ready to start when the previous finishes. A task is 
 
 ---
 
-## 6. Write tasks.json
+## 6. Write tasks.md
 
-With ordering settled, write the JSON index at `<outputPath>/tasks.json`.
+With ordering settled, write the task index at `<outputPath>/tasks.md`.
 
-```json
-{
-  "change": "<change-name>",
-  "tasks": [
-    {
-      "id": 1,
-      "title": "<Task title>",
-      "file": "tasks/<slug>.md",
-      "completed": false
-    },
-    {
-      "id": 2,
-      "title": "<Task title>",
-      "file": "tasks/<slug>.md",
-      "completed": false
-    }
-  ]
-}
+```markdown
+- [ ] <Task title> (`tasks/<slug>.md`)
+- [ ] <Task title> (`tasks/<slug>.md`)
 ```
 
-The `id` values reflect the final execution order. The applying agent marks tasks complete by setting `"completed": true`.
+One checkbox line per task, in execution order. The parenthesized path links to the detailed task file. The applying agent marks tasks complete by changing `[ ]` to `[x]`.
 
 ---
 
@@ -182,7 +198,7 @@ Exit cleanly. Do not ask about execution mode. Do not invoke other skills. The c
 
 Show a brief summary:
 - How many task files were created and their titles
-- The path to tasks.json
+- The path to tasks.md
 - What's now unlocked
 
 ---
@@ -209,26 +225,11 @@ Requirements 4–5 (rate limiting, audit logging) are cross-cutting concerns lay
 
 **Result: 2 tasks.**
 
-### tasks.json
+### tasks.md
 
-```json
-{
-  "change": "csv-export",
-  "tasks": [
-    {
-      "id": 1,
-      "title": "ExportService + POST /exports endpoint",
-      "file": "tasks/export-service-endpoint.md",
-      "completed": false
-    },
-    {
-      "id": 2,
-      "title": "Rate limiting and audit logging",
-      "file": "tasks/rate-limiting-audit-log.md",
-      "completed": false
-    }
-  ]
-}
+```markdown
+- [ ] ExportService + POST /exports endpoint (`tasks/export-service-endpoint.md`)
+- [ ] Rate limiting and audit logging (`tasks/rate-limiting-audit-log.md`)
 ```
 
 ### Task 1 file

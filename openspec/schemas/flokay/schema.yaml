@@ -4,150 +4,73 @@ description: Flokay workflow - proposal → design → specs → tasks → revie
 
 artifacts:
   - id: proposal
+    requires: []
+    template: proposal.md
     generates: proposal.md
     description: Initial proposal document outlining the change
-    template: proposal.md
     instruction: |
-      Create the proposal document that establishes WHY this change is needed.
-
-      Sections:
-      - **Why**: 1-2 sentences on the problem or opportunity. What problem does this solve? Why now?
-      - **What Changes**: Bullet list of changes. Be specific about new capabilities, modifications, or removals. Mark breaking changes with **BREAKING**.
-      - **Capabilities**: Identify which specs will be created or modified:
-        - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<name>/spec.md`. Use kebab-case names (e.g., `user-auth`, `data-export`).
-        - **Modified Capabilities**: List existing capabilities whose REQUIREMENTS are changing. Only include if spec-level behavior changes (not just implementation details). Each needs a delta spec file. Check `openspec/specs/` for existing spec names. Leave empty if no requirement changes.
-      - **Impact**: Affected code, APIs, dependencies, or systems.
-
-      IMPORTANT: The Capabilities section is critical. It creates the contract between
-      proposal and specs phases. Research existing specs before filling this in.
-      Each capability listed here will need a corresponding spec file.
-
-      Keep it concise (1-2 pages). Focus on the "why" not the "how" -
-      implementation details belong in design.md.
-
-      This is the foundation - design, spec and tasks all build on this.
-    requires: []
+      IMPORTANT: You MUST use the `propose` skill for this step.
+      Write a proposal document that establishes WHY this change is needed.
+      Keep it concise (1-2 pages). Focus on the "why" not the "how".
+      See comments in the template for section details and guidance.
+      IMPORTANT: Do not create the change directory until the user has explicitly decided to proceed
+      with the proposal. The propose skill includes an evaluation phase (understand → research →
+      evaluate worth → explore approach) that may result in a NO-GO verdict. Only create the
+      directory and write proposal.md after the user confirms they want to go ahead.
+      When done, tell the user the relative path of the proposal file created.
 
   - id: design
+    requires: [proposal]
+    template: design.md
     generates: design.md
     description: Technical design document with implementation details
-    template: design.md
-    instruction: Use the brainstorming skill to create this artifact, using the proposal as the source of motivation and context.
-    requires:
-      - proposal
+    instruction: |
+      IMPORTANT: You MUST use the `design` skill for this step.
+      Create this artifact using the proposal as the source of motivation and context.
+      See comments in the template for section details and guidance.
+      When done, tell the user the relative path of the design file created.
 
   - id: specs
+    requires: [design]
+    template: spec.md
     generates: "specs/**/*.md"
     description: Detailed specifications for the change
-    template: spec.md
     instruction: |
       Create specification files that define WHAT the system should do.
-
       Create one spec file per capability listed in the proposal's Capabilities section.
-      - New capabilities: use the exact kebab-case name from the proposal (specs/<capability>/spec.md).
-      - Modified capabilities: use the existing spec folder name from openspec/specs/<capability>/ when creating the delta spec at specs/<capability>/spec.md.
-
-      **Input sources**: Read both the proposal (for capability names and motivation) and the
-      design (for behavioral detail). The proposal tells you WHICH capabilities to spec; the
-      design tells you HOW they behave. Most of your scenario detail will come from design
-      decisions, not the proposal.
-
-      Delta operations (use ## headers):
-      - **ADDED Requirements**: New capabilities
-      - **MODIFIED Requirements**: Changed behavior - MUST include full updated content
-      - **REMOVED Requirements**: Deprecated features - MUST include **Reason** and **Migration**
-      - **RENAMED Requirements**: Name changes only - use FROM:/TO: format
-
-      Format requirements:
-      - Each requirement: `### Requirement: <name>` followed by description
-      - Use SHALL/MUST for normative requirements (avoid should/may)
-      - Each scenario: `#### Scenario: <name>` with WHEN/THEN format
-      - **CRITICAL**: Scenarios MUST use exactly 4 hashtags (`####`). Using 3 hashtags or bullets will fail silently.
-      - Every requirement MUST have at least one scenario.
-
-      **Abstraction level**: Scenarios describe observable behavioral contracts — what the
-      system does when invoked under specific conditions. Focus on orchestration behavior
-      (dispatch, gating, error handling, control flow), NOT file contents or internal structure.
-
-      Some changes produce skills, prompts, config files, or other infrastructure
-      that is not unit-testable. This is expected. Write scenarios as
-      behavioral contracts the capability guarantees to its callers:
-      - GOOD: "WHEN subagent finds task ambiguous THEN it returns questions without implementing"
-      - GOOD: "WHEN gauntlet retry limit is exhausted THEN subagent returns failure to coordinator"
-      - BAD:  "WHEN SKILL.md is read THEN it contains TDD instructions"
-      - BAD:  "WHEN config file exists THEN it has the correct YAML keys"
-      These scenarios serve as acceptance criteria for implementers and compliance targets
-      for reviewers, even when no automated test will exercise them directly.
-
-      MODIFIED requirements workflow:
-      1. Locate the existing requirement in openspec/specs/<capability>/spec.md
-      2. Copy the ENTIRE requirement block (from `### Requirement:` through all scenarios)
-      3. Paste under `## MODIFIED Requirements` and edit to reflect new behavior
-      4. Ensure header text matches exactly (whitespace-insensitive)
-
-      Common pitfall: Using MODIFIED with partial content loses detail at archive time.
-      If adding new concerns without changing existing behavior, use ADDED instead.
-
-      Example:
-      ```
-      ## ADDED Requirements
-
-      ### Requirement: User can export data
-      The system SHALL allow users to export their data in CSV format.
-
-      #### Scenario: Successful export
-      - **WHEN** user clicks "Export" button
-      - **THEN** system downloads a CSV file with all user data
-
-      ## REMOVED Requirements
-
-      ### Requirement: Legacy export
-      **Reason**: Replaced by new export system
-      **Migration**: Use new export endpoint at /api/v2/export
-      ```
-
-      Specs should be verifiable - each scenario is a potential test case or review
-      checkpoint. For code changes, scenarios map to automated tests. For infrastructure
-      and skill changes, scenarios serve as acceptance criteria verified during review.
-    requires:
-      - design
+      Read both the proposal and design as input sources.
+      See comments in the template for formatting rules, delta operations, and guidance.
+      When done, tell the user the relative path of each spec file created.
 
   - id: tasks
-    generates: tasks.json
+    requires: [specs]
+    template: tasks.md
+    generates: tasks.md
     description: Implementation checklist with trackable tasks
-    template: tasks.json
-    instruction: Use the writing-tasks skill to create this artifact.
-    requires:
-      - specs
+    instruction: |
+      IMPORTANT: You MUST use the `plan-tasks` skill for this step.
+      Create this artifact following the plan-tasks skill protocol.
+      When done, tell the user the relative path of tasks.md and all individual task files created.
 
   - id: review
+    requires: [tasks]
+    template: review.md
     generates: review.md
     description: Spec and design review report generated by Agent Gauntlet
-    template: review.md
     instruction: |
-      Run the `gauntlet-run` skill to validate the change artifacts.
-
-      The gauntlet-run skill handles the full verification loop: running
-      checks and reviews, fixing issues, and re-running until a terminal
-      status is reached. Follow its protocol completely.
-
-      After the gauntlet reaches a terminal status, write review.md
-      summarizing the results:
-      - **Summary**: One paragraph — did it pass? What's the overall
-        quality assessment of the artifacts?
-      - **Issues Fixed**: Violations that were fixed during the retry loop.
-      - **Issues Skipped**: Violations skipped per trust level, with reasons.
-      - **Issues Remaining**: Outstanding violations not resolved.
-      - **Sign-off**: APPROVED if the gauntlet passed (with or without
-        warnings). BLOCKED if retry limit was exceeded, listing what
-        must be addressed before implementation can proceed.
-    requires:
-      - tasks
+      IMPORTANT: You MUST use the `gauntlet-run` skill for this step.
+      The gauntlet-run skill handles the full verification loop. Follow its protocol completely.
+      After the gauntlet reaches a terminal status, write review.md summarizing the results.
+      See comments in the template for section details.
+      When done, tell the user the relative path of the review file created.
 
 apply:
   requires: [review]
-  tracks: tasks.json
+  tracks: tasks.md
   instruction: |
-    Read tasks.json. Iterate tasks in order. For each task where
-    `completed` is false, read its task file, implement the work, then set
-    `"completed": true` in tasks.json. Pause if you hit blockers or need clarification.
+    IMPORTANT: You MUST use the `implement-task` skill for this step.
+    Follow the `implement-task` skill to dispatch subagents and execute the pending tasks.
+    Read tasks.md for context. For each unchecked task (`- [ ]`),
+    the implement-task skill will handle dispatching a subagent to implement
+    the work and marking it complete (`- [x]`) in tasks.md.
+    Pause if you hit blockers or need clarification.

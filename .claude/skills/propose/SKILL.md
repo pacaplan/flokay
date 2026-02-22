@@ -1,52 +1,45 @@
 ---
-name: evaluate-idea
+name: propose
 description: >
-  Evaluate whether a software idea is worth building before committing to a formal proposal.
-  Use when the user wants to assess an idea, says "evaluate", "is this worth building",
-  "should we build", or invokes /evaluate-idea. Conversational — produces no files.
-  If the idea passes evaluation, transition to /opsx:new.
+  Evaluate whether a software idea is worth building, then write the proposal document.
+  Use when the user wants to assess an idea, says "evaluate", "propose", "is this worth building",
+  or "should we build". If the idea passes evaluation, write the proposal document using the provided template.
 ---
 
-# Evaluate Idea
+# Propose
 
-Evaluate whether an idea is worth formalizing into an OpenSpec proposal. This is the gateway to the Flokay pipeline — it sits between optional freeform exploration (`/explore`) and the formal proposal artifact (`/opsx:new`).
+Evaluate whether an idea is worth formalizing, and if so, write the proposal document. This sits between optional freeform exploration and the formal design artifact.
 
-**IMPORTANT: This skill produces NO files.** Do not create proposals, plans, specs, or any other documents. If the idea is worth pursuing, the user runs `/opsx:new` to formalize it — the conversation context flows naturally into that step.
+**The proposal is a "why" document.** Your job is to deeply understand and articulate the motivation — the problem, the opportunity, and why it matters now. Touch on "what" just enough to scope the change, but leave the "how" for later.
 
 ## Principles
 
-- **Conversational, not documentary** — Chat with the user. Ask questions. Challenge assumptions. Do NOT create files, docs, or plans unless explicitly asked.
+- **Conversational evaluation, documentary proposal** — The evaluation phase is a conversation. The proposal phase produces `proposal.md`. Keep these phases distinct.
 - **Research-informed** — Before opining, investigate the codebase and web resources to ground advice in reality.
 - **Honest assessment** — If an idea has problems, say so directly. "Not worth building" is a valid and valuable outcome. A brainstorm that only cheerleads is useless.
 - **Visual** — Use ASCII diagrams liberally when they'd help clarify thinking: architecture maps, comparison tables, flow sketches.
-- **Scope-appropriate** — Stay at the level of "what" and "why". Implementation details (file-level changes, specific APIs) belong in design.md later.
-
-## Getting Started
-
-At the start, quickly check what exists:
-
-```bash
-openspec list --json
-```
-
-If there are active changes, read their artifacts for context — the user's idea may relate to or conflict with work already in flight. If the idea overlaps with an existing change, surface that early.
-
-Then understand the idea. If the user's invocation didn't include enough context, ask:
-- What is the idea? What does it do from the user's perspective?
-- What problem does it solve? Who has this problem?
-- What triggered this? (bug report, user request, personal itch, competitive pressure)
-
-Do not proceed until you have a concrete understanding of the idea.
+- **Why-first** — The proposal establishes motivation, not solutions. Dig into the problem deeply. Implementation details and technical approach belong in design.md.
 
 ## Flow
 
 ### 1. Understand
 
+First understand the idea. If the user's invocation didn't include enough context, ask:
+- What is the idea? What does it do from the user's perspective?
+- What problem does it solve? Who has this problem?
+- What triggered this? (bug report, user request, personal itch, competitive pressure)
+
 Get clarity on the idea. Ask one or two questions at a time — don't barrage. Prefer multiple-choice questions when possible, but open-ended is fine too. Focus on purpose, constraints, and success criteria.
+
+Do not proceed until you have a concrete understanding of the idea.
 
 ### 2. Research
 
 Investigate before forming opinions. Do this proactively.
+
+**Spec research** (when requirement specs exist):
+- Review existing specs to understand current system behavior
+- Identify if the idea conflicts with or extends existing capabilities
 
 **Codebase research** (when a relevant codebase exists):
 - Explore existing architecture to understand how this idea would fit
@@ -76,7 +69,7 @@ VERDICT
 ════════════════════════════════════════════
 
   GO          Worth pursuing.
-              → Explore the approach, then /opsx:new
+              → Explore the approach, then write the proposal
 
   GO WITH     Worth pursuing, but with
   CAVEATS     scope or approach adjustments.
@@ -88,9 +81,9 @@ VERDICT
 
 A "no-go" requires explanation: what specifically makes this not worth pursuing, and whether anything could change that assessment. If the user disagrees, engage with their reasoning — but ultimately it's their decision.
 
-### 4. Explore the Approach
+### 4. Explore the Approach (lightly)
 
-Only reached on GO or GO WITH CAVEATS. Discuss the high-level technical approach:
+Only reached on GO or GO WITH CAVEATS. Sketch the high-level approach just enough to bound scope and identify risks — this is NOT the design phase:
 
 - **Architecture fit** — How does this fit into the existing system? Align with current patterns or require new ones?
 - **Key technical decisions** — The 2-3 big choices that will shape implementation (e.g., sync vs async, build vs buy, new service vs extending existing)
@@ -99,26 +92,17 @@ Only reached on GO or GO WITH CAVEATS. Discuss the high-level technical approach
 
 Present options when multiple approaches exist. Give a recommendation with reasoning, but let the user decide. Draw comparison tables and architecture sketches.
 
-### 5. Converge
+### 5. Write the Proposal
 
-When things crystallize, summarize:
+Once the idea has been evaluated and the approach has crystallized, write the proposal document follow whatever format instructions you were given.
 
-- **The idea** as understood
-- **The verdict** and any conditions
-- **Recommended approach** (if one emerged)
-- **Open questions** that remain
-
-Then prompt the transition:
-
-> Ready to formalize this? Run `/opsx:new <suggested-name>` to create the proposal.
-
-Suggest a kebab-case change name derived from the idea (e.g., "add user authentication" becomes `add-user-auth`).
+The proposal should be anchored in the "why" — the problem, the motivation, and the impact. Draw heavily from the Understand and Evaluate phases. The "what changes" section should scope the work without prescribing solutions.
 
 ## Guardrails
 
-- **Do not create files** — No proposals, no plans, no design docs. The only output is conversation.
 - **Do not skip the evaluation** — Even for "obvious" ideas, the evaluation surfaces risks and shapes scope. Speed through it, but don't skip it.
 - **Do not cheerlead** — Honest assessment over enthusiasm. Every idea has trade-offs; name them.
-- **Do not go deep on implementation** — Architecture fit and key decisions are in scope. File-level details are not — those belong in design.md.
-- **Do not auto-transition** — Offer `/opsx:new` when ready, but let the user decide when and whether to proceed.
+- **Do not go deep on implementation** — The proposal answers "why" and scopes "what". The "how" belongs entirely in design.md. Resist the urge to solve the problem in the proposal.
+- **Do not auto-transition** — Confirm with the user before writing the proposal. A "no-go" verdict means no proposal.
 - **Do visualize** — Diagrams help clarify thinking. Use them for architecture, comparisons, and flows.
+- **Proposal format lives in the template** — Do not hardcode proposal structure in this skill. Read and follow the template.

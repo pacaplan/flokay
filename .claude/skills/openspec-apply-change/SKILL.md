@@ -1,4 +1,3 @@
-<!-- pulled-skill | source: openspec | type: generate | package: openspec | version: ^1.1.0 | installedVersion: 1.1.1 -->
 ---
 name: openspec-apply-change
 description: Implement tasks from an OpenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.
@@ -65,9 +64,20 @@ Implement tasks from an OpenSpec change.
    - Remaining tasks overview
    - Dynamic instruction from CLI
 
-6. **Delegate implementation to the `implement-task` skill**
+6. **Implement tasks (loop until done or blocked)**
 
-   Follow the `implement-task` skill to dispatch subagents and execute the pending tasks.
+   For each pending task:
+   - Show which task is being worked on
+   - Make the code changes required
+   - Keep changes minimal and focused
+   - Mark task complete in the tasks file: `- [ ]` → `- [x]`
+   - Continue to next task
+
+   **Pause if:**
+   - Task is unclear → ask for clarification
+   - Implementation reveals a design issue → suggest updating artifacts
+   - Error or blocker encountered → report and wait for guidance
+   - User interrupts
 
 7. **On completion or pause, show status**
 
@@ -134,7 +144,7 @@ What would you like to do?
 - If task is ambiguous, pause and ask before implementing
 - If implementation reveals issues, pause and suggest artifact updates
 - Keep code changes minimal and scoped to each task
-- Update task completion status immediately after completing each task
+- Update task checkbox immediately after completing each task
 - Pause on errors, blockers, or unclear requirements - don't guess
 - Use contextFiles from CLI output, don't assume specific file names
 

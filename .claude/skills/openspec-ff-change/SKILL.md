@@ -1,4 +1,3 @@
-<!-- pulled-skill | source: openspec | type: generate | package: openspec | version: ^1.1.0 | installedVersion: 1.1.1 -->
 ---
 name: openspec-ff-change
 description: Fast-forward through OpenSpec artifact creation. Use when the user wants to quickly create all artifacts needed for implementation without stepping through each one individually.

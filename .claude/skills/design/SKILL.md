@@ -1,16 +1,16 @@
 <!-- pulled-skill | source: superpowers | repo: https://github.com/obra/superpowers | path: skills | version: v4.3.0 | forked: true -->
 ---
-name: brainstorming
-description: "Collaborative dialogue skill for creating design artifacts. Explores approaches, architecture, and trade-offs through conversation before writing the design document."
+name: design
+description: "Collaborative design skill for creating design artifacts. Brainstorms approaches, architecture, and trade-offs through conversation before writing the design document."
 ---
 
-# Brainstorming Ideas Into Designs
+# Design
 
 ## Overview
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
+Help turn ideas into fully formed designs through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
+Start by understanding the current project context, then use brainstorming to refine the idea by asking questions one at a time. Once you understand what you're building, present the design and get user approval.
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
@@ -33,7 +33,7 @@ You MUST create a task for each of these items and complete them in order:
 ## Process Flow
 
 ```dot
-digraph brainstorming {
+digraph design {
     "Explore project context" [shape=box];
     "Ask clarifying questions" [shape=box];
     "Propose 2-3 approaches" [shape=box];

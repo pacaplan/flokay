@@ -1,4 +1,3 @@
-<!-- pulled-skill | source: openspec | type: generate | package: openspec | version: ^1.1.0 | installedVersion: 1.1.1 -->
 ---
 name: openspec-new-change
 description: Start a new OpenSpec change using the experimental artifact workflow. Use when the user wants to create a new feature, fix, or modification with a structured step-by-step approach.
