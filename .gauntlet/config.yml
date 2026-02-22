@@ -19,7 +19,7 @@ entry_points:
       - "openspec"
     checks: []
     reviews:
-      - code-quality
+      - skill-quality
       - task-compliance
 
   - path: "openspec/changes"

@@ -17,6 +17,7 @@ artifacts:
       with the proposal. The propose skill includes an evaluation phase (understand → research →
       evaluate worth → explore approach) that may result in a NO-GO verdict. Only create the
       directory and write proposal.md after the user confirms they want to go ahead.
+      When done, tell the user the relative path of the proposal file created.
 
   - id: design
     requires: [proposal]
@@ -27,6 +28,7 @@ artifacts:
       IMPORTANT: You MUST use the `design` skill for this step.
       Create this artifact using the proposal as the source of motivation and context.
       See comments in the template for section details and guidance.
+      When done, tell the user the relative path of the design file created.
 
   - id: specs
     requires: [design]
@@ -38,6 +40,7 @@ artifacts:
       Create one spec file per capability listed in the proposal's Capabilities section.
       Read both the proposal and design as input sources.
       See comments in the template for formatting rules, delta operations, and guidance.
+      When done, tell the user the relative path of each spec file created.
 
   - id: tasks
     requires: [specs]
@@ -47,6 +50,7 @@ artifacts:
     instruction: |
       IMPORTANT: You MUST use the `plan-tasks` skill for this step.
       Create this artifact following the plan-tasks skill protocol.
+      When done, tell the user the relative path of tasks.json and all individual task files created.
 
   - id: review
     requires: [tasks]
@@ -58,6 +62,7 @@ artifacts:
       The gauntlet-run skill handles the full verification loop. Follow its protocol completely.
       After the gauntlet reaches a terminal status, write review.md summarizing the results.
       See comments in the template for section details.
+      When done, tell the user the relative path of the review file created.
 
 apply:
   requires: [review]

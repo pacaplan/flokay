@@ -32,6 +32,7 @@ Explore the existing code relevant to this change. You need to understand:
 - Which files and modules will be touched
 - Current structure, interfaces, and conventions the implementation must follow
 - Whether any existing code is tangled or poorly abstracted enough that the new work would be significantly harder to implement as-is
+- Whether any existing documentation (README, guides, config references, etc.) will need updating as a result of this change
 
 **Decide now if a refactoring task is needed.** If implementation would require working around serious structural obstacles in the current code, you'll prepend a standalone refactoring task in Step 5. This task restructures existing code without changing behavior, so the feature work lands cleanly. It is not a default step — add it only when genuinely warranted. When in doubt, skip it; the implementing subagent can refactor inline as needed.
 
@@ -69,6 +70,8 @@ For small changes, a single task is fine. Don't manufacture fake granularity.
 
 **Anti-pattern: "Laying the groundwork"**. Infrastructure that exists purely to enable another task (e.g., "Set up the Gauntlet infra that Task 2 needs," "Add the module skeleton") should be folded into that dependent task. If a task produces no testable behavioral value of its own, it is a sign it should be merged into the task that actually exercises it. The exception is database migrations or dependency changes risky enough to review on their own.
 
+**Anti-pattern: Separate doc-update tasks.** Don't create standalone tasks for documentation updates (README, guides, license files, etc.) when the docs are part of the same change as code or config. Update docs in the same task that introduces the related functionality. Only split docs into their own task when the documentation work is substantial and independent of any code change (e.g., a docs-only change).
+
 **Litmus test for infrastructure/config-only changes:** If all files being created/modified are prompt files, config files, skill definitions, or other non-compiled artifacts (no application code with runtime behavior), the entire change is likely one task. Prompt/config changes don't have the layer boundaries that justify splitting — they're all "infrastructure" in the same sense. Only split when tasks produce independently valuable, releasable functionality.
 ---
 
@@ -78,7 +81,35 @@ For each task you identified, write a self-contained `<slug>.md` file in `tasks/
 
 **slug**: 2–4 word kebab-case summary (e.g., `export-service-endpoint`, `rate-limiting-audit-log`)
 
-### Task file format
+### Single-task changes
+
+When the entire change is one task, reference the design and spec docs by path rather than duplicating them. No `## Spec` section needed. The task file needs **Goal**, **Background**, and **Done When**.
+
+In Background, list every file the implementer MUST read using exact relative paths. Do NOT use globs or vague references like "See `specs/`" — if a file isn't listed, it won't be read.
+
+**Example:**
+```markdown
+# Task: Package as Plugin
+
+## Goal
+
+Restructure the repository as a Claude Code plugin with skills, schema, init scaffolding, and documentation.
+
+## Background
+
+You MUST read these files before starting:
+- `design.md` for full design details
+- `specs/plugin-packaging/spec.md` for plugin structure and init skill acceptance criteria
+- `specs/skill-decoupling/spec.md` for skill decoupling acceptance criteria
+
+The proposal motivation is <brief "why" context if helpful>.
+
+## Done When
+
+All spec scenarios pass review. The plugin installs and skills are invocable.
+```
+
+### Multi-task file format
 
 ```markdown
 # Task: <Title>
