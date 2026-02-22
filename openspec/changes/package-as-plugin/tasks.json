@@ -1,0 +1,11 @@
+{
+  "change": "package-as-plugin",
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Plugin packaging, skill decoupling, and documentation",
+      "file": "tasks/plugin-packaging.md",
+      "completed": false
+    }
+  ]
+}
