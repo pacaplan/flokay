@@ -10,13 +10,20 @@ num_reviews: 2
 
 **Instructions:**
 
-### 1. Read the Task Context
+> **PRECONDITION — check this before doing anything else.**
+> Read `.gauntlet/current-task-context.md`.
+> - If the file **does not exist** or is **empty**: report a single medium-severity issue with the description below and **STOP. Do not read the diff. Do not report any other issues.**
+> - Description: *"No task context file found. If this change was made using the implement-task skill, the implementer should write .gauntlet/current-task-context.md before running gauntlet. If this is a manual change, this issue can be ignored."*
 
-Read `.gauntlet/current-task-context.md` to get the task file path. Then read the task file at that path to get the full task specification (Goal, Background, Spec with requirements and scenarios, Done When).
+Only continue to the steps below if a non-empty `.gauntlet/current-task-context.md` was found.
 
-If `.gauntlet/current-task-context.md` does not exist or is empty, return a **warning** (not a failure): "No task context file found. If this change was made using the implement-task skill, the implementer should write .gauntlet/current-task-context.md before running gauntlet. If this is a manual change, this warning can be ignored."
+---
 
-### 2. Compare Diff Against Task Spec
+## 1. Read the Task Context
+
+Read the task file path from `.gauntlet/current-task-context.md`, then read the task file to get the full task specification (Goal, Background, Spec with requirements and scenarios, Done When).
+
+## 2. Compare Diff Against Task Spec
 
 Examine the diff and verify against the task's Spec section:
 
@@ -32,7 +39,7 @@ Examine the diff and verify against the task's Spec section:
 
 If a scenario is missing from the diff, report: "Missing scenario: <requirement name> / <scenario name>"
 
-### 3. Output
+## 3. Output
 
 For each issue found, report:
 - **Severity**: high (missing scenario), medium (partial implementation), low (style/minor)

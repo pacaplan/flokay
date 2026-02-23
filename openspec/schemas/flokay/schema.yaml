@@ -68,9 +68,11 @@ apply:
   requires: [review]
   tracks: tasks.md
   instruction: |
+    First, read the change's proposal.md, design.md, and all specs/ files so you have full context.
     IMPORTANT: You MUST use the `flokay:implement-task` skill for this step.
     Follow the `flokay:implement-task` skill to dispatch subagents and execute the pending tasks.
     Read tasks.md for context. For each unchecked task (`- [ ]`),
     the implement-task skill will handle dispatching a subagent to implement
     the work and marking it complete (`- [x]`) in tasks.md.
     Pause if you hit blockers or need clarification.
+    Once ALL tasks are complete, invoke the `openspec-archive-change` skill to archive the change.

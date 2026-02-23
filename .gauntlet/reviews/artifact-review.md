@@ -13,7 +13,7 @@ num_reviews: 2
 **Required reading before reviewing:** Read these reference files first — they define the standards each artifact must meet. Apply them as your review criteria rather than relying only on the high-level checks below.
 
 - **Artifact templates** (skip `design.md`): Read the HTML comments in `openspec/schemas/flokay/templates/proposal.md`, `openspec/schemas/flokay/templates/spec.md`, `openspec/schemas/flokay/templates/review.md`, and `openspec/schemas/flokay/templates/tasks.md`. Each template contains formatting rules, required sections, and constraints. Verify that the corresponding change artifacts follow all template instructions.
-- **Plan-tasks skill**: Read `.claude/skills/plan-tasks/SKILL.md`. This is the authoritative reference for task granularity — splitting rules, merge test, anti-patterns, and examples. Use it to evaluate whether the task breakdown is at the right level.
+- **Plan-tasks skill**: Use the `flokay:plan-tasks` skill for the review. This is the authoritative reference for task granularity — splitting rules, merge test, anti-patterns, and examples. Use it to evaluate whether the task breakdown is at the right level.
 
 **Evaluation Criteria:**
 
