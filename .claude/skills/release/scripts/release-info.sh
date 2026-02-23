@@ -27,6 +27,10 @@ fi
 
 # --- Current version from plugin.json ---
 CURRENT_VERSION=$(jq -r '.version' "$PLUGIN_JSON")
+if [[ ! "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  jq -n --arg v "$CURRENT_VERSION" '{"error": "invalid_version", "message": "Invalid version in plugin.json: \($v)"}' >&2
+  exit 1
+fi
 
 # --- Fetch merged PRs since last tag ---
 PRS=$(gh pr list --repo "$REPO" --state merged --base main \
@@ -45,7 +49,7 @@ RESULT=$(echo "$PRS" | jq --arg cv "$CURRENT_VERSION" '
   {
     current_version: $cv,
     major: [.[] | select(
-      (.title | test("!:")) or
+      (.title | test("^\\w+(\\(.*\\))?!:")) or
       (.labels // [] | map(.name) | any(. == "breaking"))
     )],
     minor: [.[] | select(
