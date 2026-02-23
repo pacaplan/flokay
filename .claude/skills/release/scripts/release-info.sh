@@ -54,12 +54,12 @@ RESULT=$(echo "$PRS" | jq --arg cv "$CURRENT_VERSION" '
     )],
     minor: [.[] | select(
       (.title | test("^feat(\\(.*\\))?:")) and
-      (.title | test("!:") | not) and
+      (.title | test("^\\w+(\\(.*\\))?!:") | not) and
       ((.labels // [] | map(.name) | any(. == "breaking")) | not)
     )],
     patch: [.[] | select(
       (.title | test("^feat(\\(.*\\))?:") | not) and
-      (.title | test("!:") | not) and
+      (.title | test("^\\w+(\\(.*\\))?!:") | not) and
       ((.labels // [] | map(.name) | any(. == "breaking")) | not)
     )]
   } |
