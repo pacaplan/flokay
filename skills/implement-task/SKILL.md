@@ -45,6 +45,8 @@ Orchestrate subagent-driven task implementation for a structured change.
       **Important**:
       - Each task gets a FRESH subagent (do not resume previous ones)
       - Do NOT use `isolation: "worktree"` — subagent works on the current branch
+      - NEVER use `run_in_background: true` or `TaskOutput`. Always use synchronous Task calls. Background subagents have a known bug that returns garbage instead of the actual answer.
+      - Execute tasks one at a time, in order — NEVER dispatch multiple tasks in parallel
 
    d. **Handle response**:
       - **Success**: Mark the task complete by changing `- [ ]` to `- [x]` in the tasks file. Show progress: "Task N/M complete"
@@ -94,4 +96,4 @@ Task 2/3 complete
 - One fresh subagent per task — never resume a previous subagent
 - Mark completion immediately after successful subagent return
 - Pause on any failure — never skip tasks silently
-- Process tasks in order as defined in the tasks file
+- Process tasks strictly one at a time, in order — NEVER in parallel
