@@ -50,6 +50,8 @@ Orchestrate subagent-driven task implementation for a structured change.
 
    d. **Handle response**:
       - **Success**: Mark the task complete by changing `- [ ]` to `- [x]` in the tasks file. Read the `### Context Usage` section from the subagent's report. Show progress: "Task N/M complete (context: <percentage>%)" or "Task N/M complete (context: unknown)" if the value is unavailable.
+        <!-- KNOWN LIMITATION: The reported percentage is currently the parent session's
+             stale context usage, not the subagent's own. See implementer-prompt.md for details. -->
       - **Failure with questions**: Read the task file to understand context, answer what you can from the change artifacts, and retry with a fresh subagent including the answers
       - **Failure (blocker)**: Do NOT mark the task complete. Pause and ask the user for guidance:
         - Skip this task and continue

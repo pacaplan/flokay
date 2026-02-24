@@ -70,6 +70,14 @@ Do NOT wait for input. Return failure and let the coordinator handle it.
 
 ## Context Usage Reporting
 
+<!-- KNOWN LIMITATION: Task tool subagents do NOT trigger their own statusLine
+     calls, so no subagent-specific /tmp/claude-context-* file is created.
+     The recency-based read below will find the PARENT session's file instead,
+     returning the parent's stale context % rather than the subagent's own usage.
+     Until a mechanism exists for subagents to report their own context usage
+     (e.g., transcript-based estimation), this will always report the parent's
+     last-known value — never "unknown" and never the subagent's actual usage. -->
+
 Before returning your report, read the most recently modified `/tmp/claude-context-*` file to obtain your context window usage percentage. Use this command:
 
 ```bash
