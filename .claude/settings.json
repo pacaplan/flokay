@@ -1,6 +1,7 @@
 {
   "enabledPlugins": {
-    "plugin-dev@claude-plugins-official": true
+    "plugin-dev@claude-plugins-official": true,
+    "flokay@flokay": true
   },
   "hooks": {
     "Stop": [
