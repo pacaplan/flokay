@@ -40,13 +40,34 @@ Fix CI failures and review comments on the current branch's PR by dispatching a 
    # Get all reviews
    gh api "repos/{owner}/{repo}/pulls/{pr-number}/reviews?per_page=100"
 
-   # Get inline review comments (line-level)
-   gh api "repos/{owner}/{repo}/pulls/{pr-number}/comments?per_page=100"
+   # Get unresolved inline review threads via GraphQL (includes resolution status)
+   gh api graphql -f query='
+     query($owner: String!, $repo: String!, $number: Int!) {
+       repository(owner: $owner, name: $repo) {
+         pullRequest(number: $number) {
+           reviewThreads(first: 100) {
+             nodes {
+               id
+               isResolved
+               comments(first: 10) {
+                 nodes {
+                   author { login }
+                   path
+                   line
+                   body
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+   ' -f owner="{owner}" -f repo="{repo}" -F number={pr-number}
    ```
 
    - Filter reviews to latest state per reviewer
    - Collect `CHANGES_REQUESTED` reviews: author, body
-   - Collect unresolved inline comments: author, file path, line, body
+   - From the GraphQL result, collect only threads where `isResolved` is `false`: author, file path, line, body
 
 3. **Dispatch fixer subagent**
 

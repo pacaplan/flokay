@@ -404,6 +404,8 @@ All tasks done:
 The change is implemented! One more step—let's archive it.
 ```
 
+Note: In a full workflow (outside onboarding), after archiving the code changes are driven to green automatically via the post-archive sequence: `push-pr` (commit and open PR) → `wait-ci` (poll until checks complete) → `fix-pr` (address any failures or comments), looping until CI passes.
+
 ---
 
 ## Phase 10: Archive
@@ -446,6 +448,7 @@ You just completed a full OpenSpec cycle:
 6. **Tasks** - Broke it into steps
 7. **Apply** - Implemented the work
 8. **Archive** - Preserved the record
+9. **Post-archive** - In a full workflow, the cycle continues automatically: `push-pr` opens the PR, `wait-ci` polls until checks complete, and `fix-pr` addresses any failures or comments—looping until CI is green.
 
 This same rhythm works for any size change—a small fix or a major feature.
 

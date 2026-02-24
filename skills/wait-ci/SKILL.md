@@ -33,16 +33,17 @@ Poll CI check status for the current branch's PR and report the result, enrichin
 
    ```bash
    # CI checks
-   gh pr checks --json name,state,link
+   gh pr checks --json name,state,bucket,link
 
    # Blocking reviews
    gh api "repos/{owner}/{repo}/pulls/{pr-number}/reviews?per_page=100"
    ```
 
-   **Evaluate checks:**
-   - States to treat as pending: `PENDING`, `QUEUED`, `IN_PROGRESS`
-   - States to treat as failed: `FAILURE`
-   - All other states (e.g., `SUCCESS`): complete
+   **Evaluate checks** (use the `bucket` field for classification):
+   - `bucket` = `pending`: check is still running (PENDING, QUEUED, IN_PROGRESS)
+   - `bucket` = `fail`: check has failed (includes FAILURE, TIMED_OUT, ACTION_REQUIRED)
+   - `bucket` = `pass`: check has passed (SUCCESS)
+   - Fall back to the raw `state` value only if `bucket` is absent
 
    **Evaluate reviews:**
    - Filter reviews to the latest state per reviewer (later reviews override earlier ones)
@@ -106,7 +107,7 @@ Poll CI check status for the current branch's PR and report the result, enrichin
 
 Report a structured result:
 
-~~~
+~~~markdown
 ## CI Status: <passed | failed | pending | comments>
 
 **PR:** <url>

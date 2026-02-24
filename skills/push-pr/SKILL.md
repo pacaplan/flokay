@@ -25,8 +25,9 @@ Commit all changes, push to the remote, and create or update the pull request fo
    - If push fails, show the error and stop
 
 3. **Check if PR exists**
-   - Run `gh pr view --json url,title,state,number,headRefOid` to check for an existing PR
-   - Parse the `state` field from the JSON response
+   - Run `gh pr view --json url,title,state,number,headRefOid || true` to check for an existing PR; the command exits non-zero when no PR exists, so `|| true` prevents the step from stopping
+   - If the output is empty or the command produced no JSON, treat it as no PR existing and proceed to creation
+   - Otherwise, parse the `state` field from the JSON response
    - **If PR exists and is OPEN:**
      - Check if there are new commits by comparing current HEAD with PR's `headRefOid`
      - If new commits exist:
