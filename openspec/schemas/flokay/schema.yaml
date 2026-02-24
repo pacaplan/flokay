@@ -76,3 +76,10 @@ apply:
     the work and marking it complete (`- [x]`) in tasks.md.
     Pause if you hit blockers or need clarification.
     Once ALL tasks are complete, invoke the `openspec-archive-change` skill to archive the change.
+
+    After archiving, run `flokay:push-pr`, then `flokay:wait-ci`; if it returns `failed` or `comments`, run `flokay:fix-pr` and repeat `flokay:wait-ci` per the loop rules below.
+
+    **Loop termination rules (MUST be followed):**
+    - **`passed` status** (CI green, no blocking reviews, no PR comments) → workflow is complete. Report success with the PR URL.
+    - **Max 3 fix cycles reached** → pause immediately, show current CI status, and ask the user how to proceed. Do NOT attempt a 4th fix cycle.
+    - **Same failure persists after 2 fix attempts** → pause immediately, explain the persistent failure in detail, and ask the user for guidance. Do NOT attempt another fix of the same failure. "Same failure" means the identical CI check name(s) appear as failing across two consecutive `wait-ci` results after fix attempts.
