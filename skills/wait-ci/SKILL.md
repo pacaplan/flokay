@@ -50,7 +50,7 @@ Poll CI check status for the current branch's PR and report the result, enrichin
    - A review with state `CHANGES_REQUESTED` is blocking
 
    **Decision after each poll:**
-   - If any check is in state `FAILURE` OR any reviewer has `CHANGES_REQUESTED`:
+   - If any check has `bucket` = `fail` OR any reviewer has `CHANGES_REQUESTED`:
      → **Fetch failure logs** (see Step 4), **gather PR comments** (see Step 5), and **return failed result** immediately
    - If no checks are pending/queued/in-progress AND no failures:
      → **Gather PR comments** (see Step 5) and **return result** (see below)

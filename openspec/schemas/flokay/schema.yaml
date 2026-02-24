@@ -77,17 +77,7 @@ apply:
     Pause if you hit blockers or need clarification.
     Once ALL tasks are complete, invoke the `openspec-archive-change` skill to archive the change.
 
-    After archiving, drive the PR to green using the following post-implementation workflow:
-
-    **Step 1: Create the PR**
-    Use `flokay:push-pr` to commit any remaining changes, push to the remote, and create or update the pull request.
-
-    **Step 2: Wait for CI**
-    Use `flokay:wait-ci` to poll CI until all checks complete or time out.
-
-    **Step 3: Fix CI failures, blocking reviews, or PR comments (if any)**
-    If `flokay:wait-ci` reports `failed` or `comments` status, use `flokay:fix-pr` to address the issues.
-    After `flokay:fix-pr` returns, go back to Step 2 and wait for CI again.
+    After archiving, run `flokay:push-pr`, then `flokay:wait-ci`; if it returns `failed` or `comments`, run `flokay:fix-pr` and repeat `flokay:wait-ci` per the loop rules below.
 
     **Loop termination rules (MUST be followed):**
     - **`passed` status** (CI green, no blocking reviews, no PR comments) → workflow is complete. Report success with the PR URL.

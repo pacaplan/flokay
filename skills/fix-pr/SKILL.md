@@ -19,10 +19,10 @@ Fix CI failures and review comments on the current branch's PR by dispatching a 
    gh pr view --json number,url,headRefName,baseRefName
 
    # Get all CI check results
-   gh pr checks --json name,state,link
+   gh pr checks --json name,state,bucket,link
    ```
 
-   For each failed check (state = `FAILURE`):
+   For each failed check (bucket = `fail`):
    - Extract the GitHub Actions run ID from the `link` field:
      - Pattern: `/actions/runs/(\d+)/`
    - Fetch failed logs:
