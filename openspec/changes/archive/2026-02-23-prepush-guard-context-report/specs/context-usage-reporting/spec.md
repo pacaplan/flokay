@@ -26,10 +26,10 @@ The orchestrator skill (`skills/implement-task/SKILL.md`) SHALL display the cont
 #### Scenario: Subagent returns numeric context percentage
 
 - **WHEN** a subagent returns a report containing a numeric context usage percentage
-- **THEN** the orchestrator SHALL display the percentage alongside the task completion message (e.g., "Task 1/3 complete (context: 42%)")
+- **THEN** the orchestrator SHALL display the percentage alongside the task completion message (e.g., "Task 1/3 complete (orchestrator context: 42%)")
 
 #### Scenario: Subagent returns unknown context usage
 
 - **WHEN** a subagent returns a report containing "unknown" as the context usage
-- **THEN** the orchestrator SHALL display "context: unknown" alongside the task completion message
+- **THEN** the orchestrator SHALL display "orchestrator context: unknown" alongside the task completion message
 
