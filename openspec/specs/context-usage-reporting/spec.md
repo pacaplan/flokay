@@ -17,6 +17,11 @@ The orchestrator SHALL read the subagent's transcript file after the Task tool r
 - **WHEN** a subagent completes and the transcript file exists but contains no valid `usage` entries or the JSON parsing fails
 - **THEN** the orchestrator SHALL use "unknown" as the context usage value
 
+#### Scenario: Token sum is zero or variable is empty after extraction
+
+- **WHEN** a subagent completes and jq succeeds but the computed sum of `input_tokens`, `cache_creation_input_tokens`, and `cache_read_input_tokens` is `0`, or the extracted variable is an empty string (which shell arithmetic would silently treat as `0`)
+- **THEN** the orchestrator SHALL treat this as unparseable and use "unknown" as the context usage value
+
 ### Requirement: Orchestrator logs context usage per task
 
 The orchestrator skill (`skills/implement-task/SKILL.md`) SHALL display the subagent's context window consumption in tokens alongside the task completion status. The token count SHALL be abbreviated to the nearest 1k (e.g., `59k tokens`). This gives the user visibility into per-task context consumption to detect oversized tasks.

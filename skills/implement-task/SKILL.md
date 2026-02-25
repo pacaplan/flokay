@@ -55,7 +55,7 @@ Orchestrate subagent-driven task implementation for a structured change.
         tokens=$(grep '"usage"' "$latest" 2>/dev/null | tail -1 | \
           jq '.message.usage | .input_tokens + .cache_creation_input_tokens + .cache_read_input_tokens' 2>/dev/null)
         ```
-        If `tokens` is a valid number, abbreviate as `$(( (tokens + 500) / 1000 ))k` and show: "Task N/M complete (<N>k tokens)". If any step fails (no file, no usage entries, jq fails), show: "Task N/M complete (unknown tokens)". Never block task execution for reporting failure.
+        If `tokens` is a valid positive number, abbreviate as `$(( (tokens + 500) / 1000 ))k` and show: "Task N/M complete (<N>k tokens)". If any step fails (no file, no usage entries, jq fails), or if `tokens` is empty or `0`, show: "Task N/M complete (unknown tokens)". Never block task execution for reporting failure.
       - **Failure with questions**: Read the task file to understand context, answer what you can from the change artifacts, and retry with a fresh subagent including the answers
       - **Failure (blocker)**: Do NOT mark the task complete. Pause and ask the user for guidance:
         - Skip this task and continue
