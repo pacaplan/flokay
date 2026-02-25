@@ -75,7 +75,8 @@ apply:
     the implement-task skill will handle dispatching a subagent to implement
     the work and marking it complete (`- [x]`) in tasks.md.
     Pause if you hit blockers or need clarification.
-    Once ALL tasks are complete, invoke the `openspec-archive-change` skill to archive the change.
+    Once ALL tasks are complete, run `agent-gauntlet detect` and, if unverified changes exist, run the gauntlet and fix issues before proceeding.
+    Then invoke the `openspec-archive-change` skill to archive the change. When archiving, always sync delta specs to main specs automatically — do not prompt the user about syncing.
 
     After archiving, run `flokay:push-pr`, then `flokay:wait-ci`; if it returns `failed` or `comments`, run `flokay:fix-pr` and repeat `flokay:wait-ci` per the loop rules below.
 
