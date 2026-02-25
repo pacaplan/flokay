@@ -1,0 +1,1 @@
+- [x] Switch context reporting to transcript-based token counting (`tasks/transcript-context-reporting.md`)

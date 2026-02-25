@@ -1,3 +1,5 @@
+## MODIFIED Requirements
+
 ### Requirement: Orchestrator derives subagent context usage from transcript
 
 The orchestrator SHALL read the subagent's transcript file after the Task tool returns to determine context window consumption. The orchestrator SHALL find the most recently modified `agent-*.jsonl` file under `~/.claude/projects/` subagent directories and extract the `usage` field from the last assistant turn. The total context fill SHALL be calculated as the sum of `input_tokens`, `cache_creation_input_tokens`, and `cache_read_input_tokens`. If no transcript file is found, no usage entries exist, or parsing fails, the orchestrator SHALL report "unknown" instead of a numeric value. The subagent SHALL NOT self-report context usage — all context measurement is the orchestrator's responsibility.
@@ -17,11 +19,6 @@ The orchestrator SHALL read the subagent's transcript file after the Task tool r
 - **WHEN** a subagent completes and the transcript file exists but contains no valid `usage` entries or the JSON parsing fails
 - **THEN** the orchestrator SHALL use "unknown" as the context usage value
 
-#### Scenario: Token sum is zero or variable is empty after extraction
-
-- **WHEN** a subagent completes and jq succeeds but the computed sum of `input_tokens`, `cache_creation_input_tokens`, and `cache_read_input_tokens` is `0`, or the extracted variable is an empty string (which shell arithmetic would silently treat as `0`)
-- **THEN** the orchestrator SHALL treat this as unparseable and use "unknown" as the context usage value
-
 ### Requirement: Orchestrator logs context usage per task
 
 The orchestrator skill (`skills/implement-task/SKILL.md`) SHALL display the subagent's context window consumption in tokens alongside the task completion status. The token count SHALL be abbreviated to the nearest 1k (e.g., `59k tokens`). This gives the user visibility into per-task context consumption to detect oversized tasks.
@@ -35,3 +32,4 @@ The orchestrator skill (`skills/implement-task/SKILL.md`) SHALL display the suba
 
 - **WHEN** a subagent returns and the orchestrator cannot determine the token count
 - **THEN** the orchestrator SHALL display "unknown tokens" alongside the task completion message (e.g., "Task 1/3 complete (unknown tokens)")
+

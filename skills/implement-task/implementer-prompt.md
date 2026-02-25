@@ -68,25 +68,6 @@ If you hit a genuine blocker (missing dependency, broken environment, contradict
 
 Do NOT wait for input. Return failure and let the coordinator handle it.
 
-## Context Usage Reporting
-
-<!-- KNOWN LIMITATION: Task tool subagents do NOT trigger their own statusLine
-     calls, so no subagent-specific /tmp/claude-context-* file is created.
-     The recency-based read below will find the PARENT session's file instead,
-     returning the parent's stale context % rather than the subagent's own usage.
-     Until a mechanism exists for subagents to report their own context usage
-     (e.g., transcript-based estimation), this will always report the parent's
-     last-known value — never "unknown" and never the subagent's actual usage. -->
-
-Before returning your report, read the most recently modified `/tmp/claude-context-*` file to obtain your context window usage percentage. Use this command:
-
-```bash
-ls -t /tmp/claude-context-* 2>/dev/null | head -1 | xargs cat 2>/dev/null
-```
-
-- If the file exists and contains a valid percentage value, include that value in your report under `### Context Usage`
-- If no file exists, the read fails, or the contents are not a valid percentage, report "unknown"
-
 ## Return Report
 
 When done, return a natural language report containing:
@@ -97,7 +78,6 @@ When done, return a natural language report containing:
 4. **Self-review findings**: Any issues found and fixed during self-review
 5. **Questions**: Any ambiguities or clarifications needed (if applicable)
 6. **Gauntlet status**: "passed" or details on what failed if retry limit was hit
-7. **Context usage**: The context window usage percentage, or "unknown" if unavailable
 
 ### Report format for success:
 
@@ -119,9 +99,6 @@ When done, return a natural language report containing:
 
 ### Gauntlet Status
 Passed - all gates clear
-
-### Context Usage
-<percentage> or unknown
 ```
 
 ### Report format for failure:
@@ -140,7 +117,4 @@ Passed - all gates clear
 
 ### Blocker Description
 <the specific blocker preventing completion>
-
-### Context Usage
-<percentage> or unknown
 ```

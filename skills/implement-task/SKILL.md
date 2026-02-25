@@ -49,9 +49,13 @@ Orchestrate subagent-driven task implementation for a structured change.
       - Execute tasks one at a time, in order — NEVER dispatch multiple tasks in parallel
 
    d. **Handle response**:
-      - **Success**: Mark the task complete by changing `- [ ]` to `- [x]` in the tasks file. Read the `### Context Usage` section from the subagent's report. Show progress: "Task N/M complete (orchestrator context: <percentage>%)" or "Task N/M complete (orchestrator context: unknown)" if the value is unavailable.
-        <!-- KNOWN LIMITATION: The reported percentage is currently the parent session's
-             stale context usage, not the subagent's own. See implementer-prompt.md for details. -->
+      - **Success**: Mark the task complete by changing `- [ ]` to `- [x]` in the tasks file. Read the subagent's transcript to get its token usage:
+        ```bash
+        latest=$(ls -t "$HOME/.claude/projects/$(echo "$PWD" | tr '/' '-')"/*/subagents/agent-*.jsonl 2>/dev/null | head -1)
+        tokens=$([ -n "$latest" ] && grep '"usage"' "$latest" 2>/dev/null | tail -1 | \
+          jq '.message.usage | (.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0)' 2>/dev/null)
+        ```
+        If `tokens` is a valid positive number, abbreviate as `$(( (tokens + 500) / 1000 ))k` and show: "Task N/M complete (<N>k tokens)". If any step fails (no file, no usage entries, jq fails), or if `tokens` is empty or `0`, show: "Task N/M complete (unknown tokens)". Never block task execution for reporting failure.
       - **Failure with questions**: Read the task file to understand context, answer what you can from the change artifacts, and retry with a fresh subagent including the answers
       - **Failure (blocker)**: Do NOT mark the task complete. Pause and ask the user for guidance:
         - Skip this task and continue
@@ -83,11 +87,11 @@ Orchestrate subagent-driven task implementation for a structured change.
 
 Working on task 1/3: <task title>
 [...subagent dispatched...]
-Task 1/3 complete (orchestrator context: 42%)
+Task 1/3 complete (59k tokens)
 
 Working on task 2/3: <task title>
 [...subagent dispatched...]
-Task 2/3 complete (orchestrator context: unknown)
+Task 2/3 complete (unknown tokens)
 
 ---
 

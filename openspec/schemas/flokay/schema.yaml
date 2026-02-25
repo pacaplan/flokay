@@ -78,9 +78,4 @@ apply:
     Once ALL tasks are complete, run `agent-gauntlet detect` and, if unverified changes exist, run the gauntlet and fix issues before proceeding.
     Then invoke the `openspec-archive-change` skill to archive the change. When archiving, always sync delta specs to main specs automatically — do not prompt the user about syncing.
 
-    After archiving, run `flokay:push-pr`, then `flokay:wait-ci`; if it returns `failed` or `comments`, run `flokay:fix-pr` and repeat `flokay:wait-ci` per the loop rules below.
-
-    **Loop termination rules (MUST be followed):**
-    - **`passed` status** (CI green, no blocking reviews, no PR comments) → workflow is complete. Report success with the PR URL.
-    - **Max 3 fix cycles reached** → pause immediately, show current CI status, and ask the user how to proceed. Do NOT attempt a 4th fix cycle.
-    - **Same failure persists after 2 fix attempts** → pause immediately, explain the persistent failure in detail, and ask the user for guidance. Do NOT attempt another fix of the same failure. "Same failure" means the identical CI check name(s) appear as failing across two consecutive `wait-ci` results after fix attempts.
+    After archiving, invoke the `flokay:finalize-pr` skill to push the PR, wait for CI, and fix any failures — it handles the full push → wait → fix loop with automatic retry and termination rules.
