@@ -17,17 +17,37 @@ Guide the user through their first complete OpenSpec workflow cycle. This is a t
 
 Before starting, check if the OpenSpec CLI is installed:
 
+**Unix/macOS:**
 ```bash
-# Unix/macOS
 openspec --version 2>&1 || echo "CLI_NOT_INSTALLED"
-# Windows (PowerShell)
-# if (Get-Command openspec -ErrorAction SilentlyContinue) { openspec --version } else { echo "CLI_NOT_INSTALLED" }
+```
+
+**Windows (PowerShell):**
+```powershell
+if (Get-Command openspec -ErrorAction SilentlyContinue) { openspec --version } else { echo "CLI_NOT_INSTALLED" }
 ```
 
 **If CLI not installed:**
 > OpenSpec CLI is not installed. Install it first, then come back to `/opsx:onboard`.
 
 Stop here if not installed.
+
+Next, check if the repo has been initialized with OpenSpec:
+
+**Unix/macOS:**
+```bash
+if [ -f "openspec.yaml" ] || [ -d ".openspec" ]; then echo "REPO_INITIALIZED"; else echo "REPO_NOT_INITIALIZED"; fi
+```
+
+**Windows (PowerShell):**
+```powershell
+if ((Test-Path "openspec.yaml") -or (Test-Path ".openspec")) { echo "REPO_INITIALIZED" } else { echo "REPO_NOT_INITIALIZED" }
+```
+
+**If repo not initialized:**
+> This repo has not been initialized with OpenSpec. Run `openspec init` first, then come back to `/opsx:onboard`.
+
+Stop here if repo is not initialized.
 
 ---
 
@@ -69,11 +89,15 @@ Scan the codebase for small improvement opportunities. Look for:
 6. **Missing validation** - User input handlers without validation
 
 Also check recent git activity:
+
+**Unix/macOS:**
 ```bash
-# Unix/macOS
 git log --oneline -10 2>/dev/null || echo "No git history"
-# Windows (PowerShell)
-# git log --oneline -10 2>$null; if ($LASTEXITCODE -ne 0) { echo "No git history" }
+```
+
+**Windows (PowerShell):**
+```powershell
+git log --oneline -10 2>$null; if ($LASTEXITCODE -ne 0) { echo "No git history" }
 ```
 
 ### Present Suggestions
@@ -267,11 +291,15 @@ For a small task like this, we might only need one spec file.
 ```
 
 **DO:** Create the spec file:
+
+**Unix/macOS:**
 ```bash
-# Unix/macOS
 mkdir -p openspec/changes/<name>/specs/<capability-name>
-# Windows (PowerShell)
-# New-Item -ItemType Directory -Force -Path "openspec/changes/<name>/specs/<capability-name>"
+```
+
+**Windows (PowerShell):**
+```powershell
+New-Item -ItemType Directory -Force -Path "openspec/changes/<name>/specs/<capability-name>"
 ```
 
 Draft the spec content:

@@ -170,7 +170,7 @@ claude plugin install pacaplan/flokay
 
 Initialize Flokay in your project:
 
-```
+```text
 /flokay:init
 ```
 

@@ -25,6 +25,20 @@ openspec --version 2>&1 || echo "CLI_NOT_INSTALLED"
 
 Stop here if not installed.
 
+Next, check if the `agent-gauntlet` CLI is installed:
+
+```bash
+# Unix/macOS
+agent-gauntlet --version 2>&1 || echo "CLI_NOT_INSTALLED"
+# Windows (PowerShell)
+# if (Get-Command agent-gauntlet -ErrorAction SilentlyContinue) { agent-gauntlet --version } else { echo "CLI_NOT_INSTALLED" }
+```
+
+**If agent-gauntlet not installed:**
+> `agent-gauntlet` CLI is not installed. Install it first (`npm install -g @pacaplan/agent-gauntlet`), then come back to `/opsx:onboard`.
+
+Stop here if not installed.
+
 ---
 
 ## Phase 1: Welcome
@@ -466,25 +480,25 @@ This same rhythm works for any size change—a small fix or a major feature.
 
 | Command | What it does |
 |---------|--------------|
-| `/opsx:propose` | Create a change and generate all artifacts |
+| `/opsx:propose <name>` | Create a change and generate all artifacts |
 | `/opsx:explore` | Think through problems before/during work |
-| `/opsx:apply` | Implement tasks from a change |
-| `/opsx:archive` | Archive a completed change |
+| `/opsx:apply <name>` | Implement tasks from a change |
+| `/opsx:archive <name>` | Archive a completed change |
 
 **Additional commands:**
 
 | Command | What it does |
 |---------|--------------|
-| `/opsx:new` | Start a new change, step through artifacts one at a time |
-| `/opsx:continue` | Continue working on an existing change |
-| `/opsx:ff` | Fast-forward: create all artifacts at once |
-| `/opsx:verify` | Verify implementation matches artifacts |
+| `/opsx:new <name>` | Start a new change, step through artifacts one at a time |
+| `/opsx:continue <name>` | Continue working on an existing change |
+| `/opsx:ff <name>` | Fast-forward: create all artifacts at once, skipping step-by-step prompts |
+| `/opsx:verify <name>` | Verify implementation matches artifacts |
 
 ---
 
 ## What's Next?
 
-Try `/opsx:propose` on something you actually want to build. You've got the rhythm now!
+Try `/opsx:propose <name>` on something you actually want to build. You've got the rhythm now!
 ```
 
 ---
@@ -519,20 +533,20 @@ If the user says they just want to see the commands or skip the tutorial:
 | Command | What it does |
 |---------|--------------|
 | `/opsx:propose <name>` | Create a change and generate all artifacts |
-| `/opsx:explore` | Think through problems (no code changes) |
-| `/opsx:apply <name>` | Implement tasks |
-| `/opsx:archive <name>` | Archive when done |
+| `/opsx:explore` | Think through problems before/during work |
+| `/opsx:apply <name>` | Implement tasks from a change |
+| `/opsx:archive <name>` | Archive a completed change |
 
 **Additional commands:**
 
 | Command | What it does |
 |---------|--------------|
-| `/opsx:new <name>` | Start a new change, step by step |
-| `/opsx:continue <name>` | Continue an existing change |
-| `/opsx:ff <name>` | Fast-forward: all artifacts at once |
-| `/opsx:verify <name>` | Verify implementation |
+| `/opsx:new <name>` | Start a new change, step through artifacts one at a time |
+| `/opsx:continue <name>` | Continue working on an existing change |
+| `/opsx:ff <name>` | Fast-forward: create all artifacts at once, skipping step-by-step prompts |
+| `/opsx:verify <name>` | Verify implementation matches artifacts |
 
-Try `/opsx:propose` to start your first change.
+Try `/opsx:propose <name>` to start your first change.
 ```
 
 Exit gracefully.

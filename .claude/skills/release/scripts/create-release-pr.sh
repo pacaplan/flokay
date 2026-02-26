@@ -22,7 +22,13 @@ jq --arg v "$NEW_VERSION" '.version = $v' "$PLUGIN_JSON" > "${PLUGIN_JSON}.tmp" 
   && mv "${PLUGIN_JSON}.tmp" "$PLUGIN_JSON"
 
 # --- Update marketplace.json version ---
-jq --arg v "$NEW_VERSION" '.plugins[0].version = $v' "$MARKETPLACE_JSON" > "${MARKETPLACE_JSON}.tmp" \
+jq --arg v "$NEW_VERSION" '
+  if any(.plugins[]; .name == "flokay") then
+    .plugins |= map(if .name == "flokay" then .version = $v else . end)
+  else
+    error("Plugin \"flokay\" not found in marketplace.json")
+  end
+' "$MARKETPLACE_JSON" > "${MARKETPLACE_JSON}.tmp" \
   && mv "${MARKETPLACE_JSON}.tmp" "$MARKETPLACE_JSON"
 
 # --- Prepend changelog section ---

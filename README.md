@@ -12,8 +12,6 @@ Flokay is a Claude plugin that structures software development as a sequence of 
 
 You can adopt the full workflow, or use the skills individually as you see fit.
 
-![Flokay Workflow](docs/images/workflow.png)
-
 ## Prerequisites
 
 Flokay requires two external CLIs and their skills:
@@ -30,7 +28,7 @@ Flokay requires two external CLIs and their skills:
 
 In Claude Code, add the Flokay marketplace and install the plugin:
 
-```
+```bash
 /plugin marketplace add pacaplan/flokay
 /plugin install flokay
 ```
