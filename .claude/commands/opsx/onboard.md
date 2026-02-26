@@ -11,16 +11,33 @@ Guide the user through their first complete OpenSpec workflow cycle. This is a t
 
 ## Preflight
 
-Before starting, check if OpenSpec is initialized:
+Before starting, check if the OpenSpec CLI is installed:
 
 ```bash
-openspec status --json 2>&1 || echo "NOT_INITIALIZED"
+# Unix/macOS
+openspec --version 2>&1 || echo "CLI_NOT_INSTALLED"
+# Windows (PowerShell)
+# if (Get-Command openspec -ErrorAction SilentlyContinue) { openspec --version } else { echo "CLI_NOT_INSTALLED" }
 ```
 
-**If not initialized:**
-> OpenSpec isn't set up in this project yet. Run `openspec init` first, then come back to `/opsx:onboard`.
+**If CLI not installed:**
+> OpenSpec CLI is not installed. Install it first, then come back to `/opsx:onboard`.
 
-Stop here if not initialized.
+Stop here if not installed.
+
+Next, check if the `agent-gauntlet` CLI is installed:
+
+```bash
+# Unix/macOS
+agent-gauntlet --version 2>&1 || echo "CLI_NOT_INSTALLED"
+# Windows (PowerShell)
+# if (Get-Command agent-gauntlet -ErrorAction SilentlyContinue) { agent-gauntlet --version } else { echo "CLI_NOT_INSTALLED" }
+```
+
+**If agent-gauntlet not installed:**
+> `agent-gauntlet` CLI is not installed. Install it first (`npm install -g @pacaplan/agent-gauntlet`), then come back to `/opsx:onboard`.
+
+Stop here if not installed.
 
 ---
 
@@ -63,7 +80,10 @@ Scan the codebase for small improvement opportunities. Look for:
 
 Also check recent git activity:
 ```bash
+# Unix/macOS
 git log --oneline -10 2>/dev/null || echo "No git history"
+# Windows (PowerShell)
+# git log --oneline -10 2>$null; if ($LASTEXITCODE -ne 0) { echo "No git history" }
 ```
 
 ### Present Suggestions
@@ -258,7 +278,10 @@ For a small task like this, we might only need one spec file.
 
 **DO:** Create the spec file:
 ```bash
+# Unix/macOS
 mkdir -p openspec/changes/<name>/specs/<capability-name>
+# Windows (PowerShell)
+# New-Item -ItemType Directory -Force -Path "openspec/changes/<name>/specs/<capability-name>"
 ```
 
 Draft the spec content:
@@ -404,8 +427,6 @@ All tasks done:
 The change is implemented! One more step—let's archive it.
 ```
 
-Note: In a full workflow (outside onboarding), after archiving the code changes are driven to green automatically via the post-archive sequence: `push-pr` (commit and open PR) → `wait-ci` (poll until checks complete) → `fix-pr` (address any failures or comments), looping until CI passes.
-
 ---
 
 ## Phase 10: Archive
@@ -448,7 +469,6 @@ You just completed a full OpenSpec cycle:
 6. **Tasks** - Broke it into steps
 7. **Apply** - Implemented the work
 8. **Archive** - Preserved the record
-9. **Post-archive** - In a full workflow, the cycle continues automatically: `push-pr` opens the PR, `wait-ci` polls until checks complete, and `fix-pr` addresses any failures or comments—looping until CI is green.
 
 This same rhythm works for any size change—a small fix or a major feature.
 
@@ -456,21 +476,29 @@ This same rhythm works for any size change—a small fix or a major feature.
 
 ## Command Reference
 
+**Core workflow:**
+
 | Command | What it does |
 |---------|--------------|
+| `/opsx:propose <name>` | Create a change and generate all artifacts |
 | `/opsx:explore` | Think through problems before/during work |
-| `/opsx:new` | Start a new change, step through artifacts |
-| `/opsx:ff` | Fast-forward: create all artifacts at once |
-| `/opsx:continue` | Continue working on an existing change |
-| `/opsx:apply` | Implement tasks from a change |
-| `/opsx:verify` | Verify implementation matches artifacts |
-| `/opsx:archive` | Archive a completed change |
+| `/opsx:apply <name>` | Implement tasks from a change |
+| `/opsx:archive <name>` | Archive a completed change |
+
+**Additional commands:**
+
+| Command | What it does |
+|---------|--------------|
+| `/opsx:new <name>` | Start a new change, step through artifacts one at a time |
+| `/opsx:continue <name>` | Continue working on an existing change |
+| `/opsx:ff <name>` | Fast-forward: create all artifacts at once, skipping step-by-step prompts |
+| `/opsx:verify <name>` | Verify implementation matches artifacts |
 
 ---
 
 ## What's Next?
 
-Try `/opsx:new` or `/opsx:ff` on something you actually want to build. You've got the rhythm now!
+Try `/opsx:propose <name>` on something you actually want to build. You've got the rhythm now!
 ```
 
 ---
@@ -500,17 +528,25 @@ If the user says they just want to see the commands or skip the tutorial:
 ```
 ## OpenSpec Quick Reference
 
+**Core workflow:**
+
 | Command | What it does |
 |---------|--------------|
-| `/opsx:explore` | Think through problems (no code changes) |
-| `/opsx:new <name>` | Start a new change, step by step |
-| `/opsx:ff <name>` | Fast-forward: all artifacts at once |
-| `/opsx:continue <name>` | Continue an existing change |
-| `/opsx:apply <name>` | Implement tasks |
-| `/opsx:verify <name>` | Verify implementation |
-| `/opsx:archive <name>` | Archive when done |
+| `/opsx:propose <name>` | Create a change and generate all artifacts |
+| `/opsx:explore` | Think through problems before/during work |
+| `/opsx:apply <name>` | Implement tasks from a change |
+| `/opsx:archive <name>` | Archive a completed change |
 
-Try `/opsx:new` to start your first change, or `/opsx:ff` if you want to move fast.
+**Additional commands:**
+
+| Command | What it does |
+|---------|--------------|
+| `/opsx:new <name>` | Start a new change, step through artifacts one at a time |
+| `/opsx:continue <name>` | Continue working on an existing change |
+| `/opsx:ff <name>` | Fast-forward: create all artifacts at once, skipping step-by-step prompts |
+| `/opsx:verify <name>` | Verify implementation matches artifacts |
+
+Try `/opsx:propose <name>` to start your first change.
 ```
 
 Exit gracefully.

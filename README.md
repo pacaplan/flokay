@@ -1,6 +1,16 @@
 # Flokay
 
-A curated, spec-driven development workflow for Claude Code. Flokay guides you through a structured sequence — proposal, design, specs, tasks, review, implement — so every change is well-reasoned before code is written.
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![CodeRabbit](https://img.shields.io/coderabbit/prs/github/pacaplan/flokay)](https://coderabbit.ai)
+
+## Overview
+
+Flokay is a Claude plugin that structures software development as a sequence of artifacts — proposal, design, specs, tasks — so you think through what you're building before writing a line of code. It provides two things:
+
+1. **Agent Skills** — a set of focused skills for each stage of development, from evaluating an idea to implementing with subagents to shepherding a PR through CI. Inspired by [obra/superpowers](https://github.com/obra/superpowers).
+2. **A structured workflow** — an opinionated, three-stage process (Design → Planning → Development) powered by those skills, [OpenSpec](https://github.com/fission-ai/OpenSpec), and the [Agent Gauntlet](https://github.com/pacaplan/agent-gauntlet) validation tool.
+
+You can adopt the full workflow, or use the skills individually as you see fit.
 
 ## Prerequisites
 
@@ -16,8 +26,11 @@ Flokay requires two external CLIs and their skills:
 
 ## Installation
 
+In Claude Code, add the Flokay marketplace and install the plugin:
+
 ```bash
-claude plugin install pacaplan/flokay
+/plugin marketplace add pacaplan/flokay
+/plugin install flokay
 ```
 
 Then initialize Flokay in your project:
@@ -26,14 +39,11 @@ Then initialize Flokay in your project:
 /flokay:init
 ```
 
-This copies the Flokay schema into your project and sets it as the default workflow.
-
 ## Quick Start
 
-1. **Start a change**: `/openspec-new-change "my-feature"`
-2. **Step through artifacts**: `/openspec-continue-change` — creates proposal, design, specs, tasks, and review in sequence
-3. **Implement**: `/openspec-apply-change` — dispatches subagents to execute each task
-4. **Archive**: `/openspec-archive-change` — moves the completed change to history
+1. **Design**: `/opsx:explore` → `/opsx:new <name>` → `/opsx:continue`
+2. **Plan**: `/opsx:ff` — generates specs, tasks, and review in one pass
+3. **Develop**: `/opsx:apply` — implements, archives, and finalizes the PR
 
 Each step uses a dedicated skill (`flokay:propose`, `flokay:design`, `flokay:plan-tasks`, etc.) that guides you through the process conversationally.
 

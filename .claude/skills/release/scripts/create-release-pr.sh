@@ -6,6 +6,7 @@ set -euo pipefail
 
 REPO="pacaplan/flokay"
 PLUGIN_JSON=".claude-plugin/plugin.json"
+MARKETPLACE_JSON=".claude-plugin/marketplace.json"
 CHANGELOG="CHANGELOG.md"
 
 NEW_VERSION="${1:?Usage: create-release-pr.sh <new-version> <changelog-section-file>}"
@@ -19,6 +20,16 @@ fi
 # --- Update plugin.json version ---
 jq --arg v "$NEW_VERSION" '.version = $v' "$PLUGIN_JSON" > "${PLUGIN_JSON}.tmp" \
   && mv "${PLUGIN_JSON}.tmp" "$PLUGIN_JSON"
+
+# --- Update marketplace.json version ---
+jq --arg v "$NEW_VERSION" '
+  if any(.plugins[]; .name == "flokay") then
+    .plugins |= map(if .name == "flokay" then .version = $v else . end)
+  else
+    error("Plugin \"flokay\" not found in marketplace.json")
+  end
+' "$MARKETPLACE_JSON" > "${MARKETPLACE_JSON}.tmp" \
+  && mv "${MARKETPLACE_JSON}.tmp" "$MARKETPLACE_JSON"
 
 # --- Prepend changelog section ---
 if [ -f "$CHANGELOG" ]; then
@@ -42,7 +53,7 @@ fi
 git checkout -B "release/v${NEW_VERSION}"
 
 # --- Stage and commit ---
-git add "$PLUGIN_JSON" "$CHANGELOG"
+git add "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CHANGELOG"
 git commit -m "chore: release v${NEW_VERSION}"
 
 # --- Push and create PR ---
