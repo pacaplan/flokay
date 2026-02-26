@@ -35,10 +35,9 @@ Archive a completed change in the experimental workflow.
 
 3. **Check task completion status**
 
-   Read the tasks file (`tasks.json` if present, falling back to `tasks.md`) to check for incomplete tasks.
+   Read the tasks file (typically `tasks.md`) to check for incomplete tasks.
 
-   For JSON format (`tasks.json`): count tasks where `"completed": false` (incomplete) vs `"completed": true` (complete).
-   For markdown format (`tasks.md`): count tasks marked with `- [ ]` (incomplete) vs `- [x]` (complete).
+   Count tasks marked with `- [ ]` (incomplete) vs `- [x]` (complete).
 
    **If incomplete tasks found:**
    - Display warning showing count of incomplete tasks
@@ -60,7 +59,7 @@ Archive a completed change in the experimental workflow.
    - If changes needed: "Sync now (recommended)", "Archive without syncing"
    - If already synced: "Archive now", "Sync anyway", "Cancel"
 
-   If user chooses sync, execute `/opsx:sync` logic. Proceed to archive regardless of choice.
+   If user chooses sync, use Task tool (subagent_type: "general-purpose", prompt: "Use Skill tool to invoke openspec-sync-specs for change '<name>'. Delta spec analysis: <include the analyzed delta spec summary>"). Proceed to archive regardless of choice.
 
 5. **Perform the archive**
 
@@ -154,5 +153,5 @@ Target archive directory already exists.
 - Don't block archive on warnings - just inform and confirm
 - Preserve .openspec.yaml when moving to archive (it moves with the directory)
 - Show clear summary of what happened
-- If sync is requested, use /opsx:sync approach (agent-driven)
+- If sync is requested, use the Skill tool to invoke `openspec-sync-specs` (agent-driven)
 - If delta specs exist, always run the sync assessment and show the combined summary before prompting
