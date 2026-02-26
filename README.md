@@ -2,6 +2,10 @@
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![CodeRabbit](https://img.shields.io/coderabbit/prs/github/pacaplan/flokay)](https://coderabbit.ai)
+[![OpenSpec Specs](https://raw.githubusercontent.com/pacaplan/flokay/gh-pages/badges/number_of_specs.svg)](https://github.com/pacaplan/flokay)
+[![OpenSpec Requirements](https://raw.githubusercontent.com/pacaplan/flokay/gh-pages/badges/number_of_requirements.svg)](https://github.com/pacaplan/flokay)
+[![OpenSpec Tasks](https://raw.githubusercontent.com/pacaplan/flokay/gh-pages/badges/tasks_status.svg)](https://github.com/pacaplan/flokay)
+[![OpenSpec Changes](https://raw.githubusercontent.com/pacaplan/flokay/gh-pages/badges/open_changes.svg)](https://github.com/pacaplan/flokay)
 
 ## Overview
 
