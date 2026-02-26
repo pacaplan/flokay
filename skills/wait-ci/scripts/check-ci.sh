@@ -34,8 +34,12 @@ INTERVAL=10
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --max-seconds) MAX_SECONDS="$2"; shift 2 ;;
-    --interval)    INTERVAL="$2";    shift 2 ;;
+    --max-seconds)
+      [[ $# -ge 2 ]] || { echo "Error: --max-seconds requires a value" >&2; exit 1; }
+      MAX_SECONDS="$2"; shift 2 ;;
+    --interval)
+      [[ $# -ge 2 ]] || { echo "Error: --interval requires a value" >&2; exit 1; }
+      INTERVAL="$2"; shift 2 ;;
     *) echo "Unknown argument: $1" >&2; exit 1 ;;
   esac
 done
@@ -90,7 +94,7 @@ while [[ $poll -lt $MAX_POLLS ]]; do
   fi
 
   # ── Fetch reviews ─────────────────────────────────────────────────────────────
-  if ! reviews_json=$(gh api "repos/${owner}/${repo}/pulls/${pr_number}/reviews?per_page=100" 2>/dev/null); then
+  if ! reviews_json=$(gh api --paginate "repos/${owner}/${repo}/pulls/${pr_number}/reviews?per_page=100" 2>/dev/null | jq -s 'add'); then
     jq -n --arg error "failed to fetch PR reviews" '{error: $error}' >&2
     exit 1
   fi
@@ -103,6 +107,7 @@ while [[ $poll -lt $MAX_POLLS ]]; do
   total_checks=$(echo "$checks_json" | jq 'length')
   failed_count=$(echo "$failed_checks" | jq 'length')
   pending_count=$(echo "$pending_checks" | jq 'length')
+  passed_count=$(echo "$passed_checks" | jq 'length')
 
   [[ $total_checks -gt 0 ]] && had_checks=true
 
@@ -153,7 +158,7 @@ while [[ $poll -lt $MAX_POLLS ]]; do
   fi
 
   # ── Terminal: passed ──────────────────────────────────────────────────────────
-  if [[ $total_checks -gt 0 && $pending_count -eq 0 ]]; then
+  if [[ $total_checks -gt 0 && $pending_count -eq 0 && $failed_count -eq 0 && $passed_count -eq $total_checks ]]; then
     jq -n \
       --arg     status          "passed" \
       --arg     pr_url          "$pr_url" \
