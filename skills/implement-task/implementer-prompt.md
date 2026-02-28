@@ -55,9 +55,18 @@ After self-review passes:
 2. **Run gauntlet**: Use the `gauntlet-run` skill to validate changes. Tell it to enable the `task-compliance` review.
 
 3. **Handle results**:
-   - **All gates pass**: Proceed to report
+   - **All gates pass**: Proceed to commit
    - **Failures found**: Fix the issues and re-run gauntlet
    - **Retry limit exhausted**: Stop and include failure details in your report
+
+## Commit
+
+After gauntlet passes, commit all changes:
+
+Check whether you have a skill for committing git changes available.
+
+- **If a commit skill is found** → invoke that skill to perform the commit
+- **If no commit skill is found** → stage all tracked changes, propose a commit message following the conventional commits format (`<type>: <description>`), then run `git commit -m "<message>"`
 
 ## Blocker Handling
 

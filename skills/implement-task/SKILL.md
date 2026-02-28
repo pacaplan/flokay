@@ -49,6 +49,9 @@ Orchestrate subagent-driven task implementation for a structured change.
       - Execute tasks one at a time, in order — NEVER dispatch multiple tasks in parallel
 
    d. **Handle response**:
+
+      Immediately after the subagent returns (success or failure), announce its full report to the user before taking any other action. Do not summarize or truncate — show everything the subagent returned.
+
       - **Success**: Mark the task complete by changing `- [ ]` to `- [x]` in the tasks file. Read the subagent's transcript to get its token usage:
         ```bash
         latest=$(ls -t "$HOME/.claude/projects/$(echo "$PWD" | tr '/.' '-')"/*/subagents/agent-*.jsonl 2>/dev/null | head -1)
