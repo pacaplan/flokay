@@ -1,5 +1,12 @@
 # flokay
 
+## 0.2.1
+
+### Patch Changes
+
+- [#10](https://github.com/pacaplan/flokay/pull/10) Fix assorted bugs across skills and the plugin, including inline GraphQL values in fix-pr to avoid shell stripping, correct project path dots for subagent transcript lookup, and clarify the review artifact as a pre-implementation change review.
+
+
 ## 0.2.0
 
 ### Minor Changes
