@@ -2,8 +2,8 @@
 cli:
   default_preference:
     - codex
+    - claude
     - gemini
-    - claude # trying to save tokens
 
   # Recommended settings (see docs/eval-results.md)
   adapters:
