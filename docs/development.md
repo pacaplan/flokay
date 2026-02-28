@@ -4,9 +4,10 @@
 
 To test the plugin from another project on the same machine:
 
-```
-/plugin marketplace add /path/to/flokay
-/plugin install flokay
+```bash
+claude plugin uninstall flokay
+claude plugin marketplace add /path/to/flokay
+claude plugin install flokay
 ```
 
 ### Refreshing after changes
