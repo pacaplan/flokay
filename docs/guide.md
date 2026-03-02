@@ -10,12 +10,12 @@ Every change moves through three stages:
 Design → Planning → Development
 ```
 
-Each stage has three steps. Design is human-driven with checkpoints between steps. Planning and Development each run continuously with a single command.
+Design is human-driven with checkpoints between steps. Planning and Development each run continuously with a single command.
 
 | Stage | Steps | Commands |
 |-------|-------|----------|
-| **Design** | Explore → Propose → Design | `/opsx:explore`, `/opsx:new`, `/opsx:continue` |
-| **Planning** | Specs → Tasks → Review | `/opsx:ff` |
+| **Design** | Explore → Propose → Spec → Design | `/opsx:explore`, `/opsx:new`, `/opsx:continue` |
+| **Planning** | Tasks → Review | `/opsx:ff` (2 steps) |
 | **Development** | Implement → Archive → Finalize PR | `/opsx:apply` |
 
 ---
@@ -27,7 +27,8 @@ Flokay skills are the agents that do the work at each step. They are invoked aut
 | Skill | Invoked During | Description |
 |-------|----------------|-------------|
 | `flokay:propose` | Propose | Evaluates whether an idea is worth building, then writes `proposal.md`. |
-| `flokay:design` | Design | Creates `design.md` through collaborative brainstorming of approaches, architecture, and trade-offs. |
+| `flokay:spec` | Spec | Drives interactive requirement discovery to produce one spec file per capability. |
+| `flokay:design` | Design | Creates `design.md` through collaborative brainstorming of architecture and trade-offs. |
 | `flokay:plan-tasks` | Tasks | Synthesizes proposal, design, and specs into self-contained per-task files. |
 | `flokay:implement-task` | Implement | Dispatches one fresh subagent per task with TDD enforcement and Agent Gauntlet quality gates. |
 | `flokay:finalize-pr` | Finalize PR | Orchestrates the full post-implementation loop: push PR → wait for CI → fix failures → repeat. |
@@ -60,7 +61,17 @@ When an idea crystallizes, move to the next step.
 
 Create a new change and draft the **proposal** (`proposal.md`). The proposal establishes *why* this change matters — the motivation, what's changing, which capabilities it introduces, and its impact. The agent guides you through an evaluation: understand the idea, research alternatives, assess whether it's worth building. Only if the verdict is GO does it write the proposal.
 
-### Step 3: Design
+### Step 3: Spec
+
+```
+/opsx:continue
+```
+
+*Skill: `flokay:spec`*
+
+Create the **specs** (`specs/<capability>/spec.md`). Specs define *what* the system must do — one spec file per capability from the proposal. The agent walks through each capability conversationally, asking one question at a time to elicit behaviors, boundaries, error conditions, and edge cases. It presents each capability's requirements for your approval before writing the file. For requirements that can't be fully specified without architectural knowledge, the agent writes a `<!-- deferred-to-design: reason -->` marker — these are resolved during the design step.
+
+### Step 4: Design
 
 ```
 /opsx:continue
@@ -68,31 +79,25 @@ Create a new change and draft the **proposal** (`proposal.md`). The proposal est
 
 *Skill: `flokay:design`*
 
-Create the **design** (`design.md`). The design answers *how* the change should work — architecture, technical decisions, trade-offs. Inspired by [obra/superpowers](https://github.com/obra/superpowers), the agent brainstorms 2–3 approaches with you, compares them, and writes the design after you approve.
-
-> **Note:** Flokay places Design before Specs, which deviates from the default OpenSpec ordering. This works well for technically-driven projects (e.g. AI development tools) where requirements are fleshed out as part of the design conversation — you're already thinking through edge cases, constraints, and behavior while exploring the architecture.
+Create the **design** (`design.md`). The design answers *how* the change should work — architecture, technical decisions, trade-offs. The agent reads all spec files first, then brainstorms 2–3 approaches with you, compares them, and writes the design after you approve. When writing the design doc, it also applies any spec edits identified during the conversation (completing deferred scenarios, adding new ones revealed by architecture).
 
 ---
 
 ## Stage 2 — Planning
 
-Planning runs as a single continuous pass. One command generates all three artifacts in sequence with no human checkpoint until complete.
+Planning runs as a single continuous pass. One command generates both artifacts in sequence with no human checkpoint until complete.
 
 ```
 /opsx:ff
 ```
 
-### Step 1: Specs
-
-Define *what* the system must do — one spec file per capability from the proposal. Each spec contains requirements with behavioral scenarios (WHEN/THEN) that become acceptance criteria. Because the design stage already works through requirements in depth, this step essentially serves as a comprehensive capture — formalizing what was decided during design into structured, testable specifications.
-
-### Step 2: Tasks
+### Step 1: Tasks
 
 *Skill: `flokay:plan-tasks`*
 
 Break specs into implementation work items. Each task is a self-contained file with everything a subagent needs: goal, background, relevant spec scenarios, and done criteria.
 
-### Step 3: Review
+### Step 2: Review
 
 *Skill: gauntlet:run* (from Agent Gauntlet)
 

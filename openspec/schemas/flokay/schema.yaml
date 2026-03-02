@@ -1,6 +1,6 @@
 name: flokay
 version: 1
-description: Flokay workflow - proposal → design → specs → tasks → review
+description: Flokay workflow - proposal → specs → design → tasks → review
 
 artifacts:
   - id: proposal
@@ -19,31 +19,33 @@ artifacts:
       directory and write proposal.md after the user confirms they want to go ahead.
       When done, tell the user the relative path of the proposal file created.
 
-  - id: design
+  - id: specs
     requires: [proposal]
+    template: spec.md
+    generates: "specs/**/*.md"
+    description: Detailed specifications for the change
+    instruction: |
+      IMPORTANT: You MUST use the `flokay:spec` skill for this step.
+      Create specification files that define WHAT the system should do.
+      Create one spec file per capability listed in the proposal's Capabilities section.
+      Read the proposal as the input source for capability names and motivation.
+      See comments in the template for formatting rules, delta operations, and guidance.
+      When done, tell the user the relative path of each spec file created.
+
+  - id: design
+    requires: [specs]
     template: design.md
     generates: design.md
     description: Technical design document with implementation details
     instruction: |
       IMPORTANT: You MUST use the `flokay:design` skill for this step.
-      Create this artifact using the proposal as the source of motivation and context.
+      Read all spec files in the change's specs/ directory before starting.
+      Create this artifact using the specs as settled requirements and the proposal as motivation and context.
       See comments in the template for section details and guidance.
       When done, tell the user the relative path of the design file created.
 
-  - id: specs
-    requires: [design]
-    template: spec.md
-    generates: "specs/**/*.md"
-    description: Detailed specifications for the change
-    instruction: |
-      Create specification files that define WHAT the system should do.
-      Create one spec file per capability listed in the proposal's Capabilities section.
-      Read both the proposal and design as input sources.
-      See comments in the template for formatting rules, delta operations, and guidance.
-      When done, tell the user the relative path of each spec file created.
-
   - id: tasks
-    requires: [specs]
+    requires: [design]
     template: tasks.md
     generates: tasks.md
     description: Implementation checklist with trackable tasks

@@ -6,10 +6,9 @@
   - Modified capabilities: use the existing spec folder name from openspec/specs/<capability>/
     when creating the delta spec at specs/<capability>/spec.md.
 
-  Input sources: Read both the proposal (for capability names and motivation) and the
-  design (for behavioral detail). The proposal tells you WHICH capabilities to spec; the
-  design tells you HOW they behave. Most of your scenario detail will come from design
-  decisions, not the proposal.
+  Input sources: Read the proposal (for capability names and motivation). The proposal
+  tells you WHICH capabilities to spec. Scenario detail comes from the conversational
+  requirement-discovery process driven by the flokay:spec skill — not from the design doc.
 
   Delta operations (use ## headers):
   - ADDED Requirements — New capabilities

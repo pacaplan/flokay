@@ -1,0 +1,1 @@
+- [x] Add spec skill, narrow design skill, reorder schema (`tasks/add-spec-skill-and-reorder.md`)
