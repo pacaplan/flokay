@@ -1,5 +1,14 @@
 # flokay
 
+## 0.3.0
+
+### Minor Changes
+
+- [#12](https://github.com/pacaplan/flokay/pull/12) Improve the implementor skill with better task dispatch and update the agent-gauntlet dependency.
+
+- [#13](https://github.com/pacaplan/flokay/pull/13) Add a new spec skill for interactive requirement discovery and reorder the flokay workflow so specs come before design.
+
+
 ## 0.2.1
 
 ### Patch Changes
