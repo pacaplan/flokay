@@ -1,5 +1,14 @@
 # flokay
 
+## 0.4.0
+
+### Minor Changes
+
+- Schema improvements to the apply workflow steps and finalize-pr skill notes for clarity and correctness.
+
+- Gauntlet-commit skill now uses exit code 2 from `agent-gauntlet detect` to determine whether gates would run, replacing fragile output text parsing.
+
+
 ## 0.3.0
 
 ### Minor Changes

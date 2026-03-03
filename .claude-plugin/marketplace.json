@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "flokay",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": "./",
       "description": "A curated, spec-driven development workflow — proposal, design, specs, tasks, review, implement.",
       "license": "MIT",
