@@ -71,6 +71,5 @@ Another example:
 ## Notes
 
 - Can be invoked standalone at any point — gathers its own state from the current branch's PR
-- Does NOT run `gauntlet-run` — that is handled inside `fix-pr` before it pushes
 - Does NOT archive the change — archiving is a separate step that happens before this skill
 - Each sub-skill (`push-pr`, `wait-ci`, `fix-pr`) is independently invocable for ad-hoc use
