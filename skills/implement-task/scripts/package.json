@@ -1,0 +1,11 @@
+{
+  "name": "flokay-implement-task-scripts",
+  "version": "1.0.0",
+  "description": "Helper scripts for the flokay implement-task skill",
+  "type": "module",
+  "dependencies": {
+    "@openai/codex-sdk": "^0.107.0",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.5"
+  }
+}
