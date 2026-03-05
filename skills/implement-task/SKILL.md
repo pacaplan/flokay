@@ -27,19 +27,51 @@ Orchestrate subagent-driven task implementation for a structured change.
 
    Read the tasks file (path provided by the apply skill). Parse the markdown checkbox list to get the ordered list of tasks with their title, file path, and completion status (`- [ ]` = pending, `- [x]` = complete).
 
-3. **Dispatch loop — one fresh subagent per pending task**
+3. **Read adapter configuration**
+
+   Before the dispatch loop, read `.claude/flokay.local.md`. If the file exists, parse the YAML frontmatter to extract:
+   - `implementation.preference` — ordered list of adapter names (e.g., `[codex, claude]`)
+   - `implementation.fallback` — boolean, whether to try subsequent adapters if the preferred one is unavailable
+
+   If the file does not exist or the frontmatter is absent/malformed, default to `preference: [claude]` and `fallback: true` (preserving current behavior with no change).
+
+4. **Check adapter availability**
+
+   Before dispatching any task, check each adapter in preference order to find the first available one:
+
+   - **`claude`**: Always available (built-in Agent tool). No check needed.
+   - **`codex`**: Run the availability check via Bash using the `invoke-codex.js` helper script (located at `scripts/invoke-codex.js` relative to this skill):
+     ```bash
+     node ${CLAUDE_PLUGIN_ROOT}/skills/implement-task/scripts/invoke-codex.js --check
+     ```
+     Parse the JSON output. If `available` is `true`, the adapter is ready. If `available` is `false`, record the `reason` field. If the codex CLI is present but the SDK is missing, the script auto-installs it (logging "Installing Codex SDK...") before reporting available.
+
+   **Selection logic:**
+   - Walk the preference list in order; select the first adapter that is available.
+   - If `fallback: false` and the first adapter is unavailable: report an error with the reason and stop without dispatching any tasks.
+   - If `fallback: true` and no adapter in the list is available: report an error listing all unavailable adapters and their reasons, then stop.
+   - Announce which adapter was selected: "Using adapter: <name>"
+
+5. **Dispatch loop — one fresh subagent per pending task**
 
    For each unchecked task (`- [ ]`), in order:
 
    a. **Announce**: "Working on task N/M: <task title>"
 
-   b. **Read the implementer prompt** at `${CLAUDE_PLUGIN_ROOT}/skills/implement-task/implementer-prompt.md`
+   b. **Record HEAD before dispatch**:
+      ```bash
+      pre_dispatch_head=$(git rev-parse HEAD 2>/dev/null || echo "")
+      ```
 
-   c. **Dispatch subagent** using the Task tool:
+   c. **Read the implementer prompt** at `${CLAUDE_PLUGIN_ROOT}/skills/implement-task/implementer-prompt.md`, substituting `TASK_FILE_PATH` with the actual task file path.
+
+   d. **Dispatch** using the selected adapter:
+
+      **If adapter is `claude`** — dispatch a subagent using the Task tool:
       ```yaml
       subagent_type: "general-purpose"
       model: "sonnet"
-      prompt: <contents of implementer-prompt.md, with TASK_FILE_PATH replaced by the actual task file path>
+      prompt: <implementer-prompt.md contents with TASK_FILE_PATH substituted>
       ```
 
       **Important**:
@@ -48,33 +80,77 @@ Orchestrate subagent-driven task implementation for a structured change.
       - NEVER use `run_in_background: true` or `TaskOutput`. Always use synchronous Task calls. Background subagents have a known bug that returns garbage instead of the actual answer.
       - Execute tasks one at a time, in order — NEVER dispatch multiple tasks in parallel
 
-   d. **Handle response**:
+      **If adapter is `codex`** — build a self-contained prompt and invoke via Bash.
 
-      Immediately after the subagent returns (success or failure), announce its full report to the user before taking any other action. Do not summarize or truncate — show everything the subagent returned.
+      Read three files from the plugin directory (all paths resolved via `${CLAUDE_PLUGIN_ROOT}`):
+      1. `implementer-prompt.md` — this skill's implementer prompt, with `TASK_FILE_PATH` substituted (relative: `skills/implement-task/implementer-prompt.md`)
+      2. `test-driven-development/SKILL.md` — the TDD methodology skill (relative: `skills/test-driven-development/SKILL.md`)
+      3. `gauntlet-commit/SKILL.md` — the commit skill (relative: `.claude/skills/gauntlet-commit/SKILL.md`)
 
-      - **Success**: Mark the task complete by changing `- [ ]` to `- [x]` in the tasks file. Read the subagent's transcript to get its token usage:
+      Concatenate all three into a single combined self-contained prompt, then invoke the `scripts/invoke-codex.js` helper (relative to this skill directory) via Bash, piping the combined prompt to stdin:
+      ```bash
+      echo "$combined_prompt" | node ${CLAUDE_PLUGIN_ROOT}/skills/implement-task/scripts/invoke-codex.js \
+        --cwd "$PWD" --timeout 600000
+      ```
+      The script outputs JSON to stdout. Parse the JSON to get `success`, `summary`, `filesChanged`, and `usage`.
+
+   e. **Handle response**:
+
+      Immediately after the adapter returns (success or failure), announce its full report to the user before taking any other action. Do not summarize or truncate — show everything the adapter returned.
+
+      **For Claude adapter:** The subagent returns a text report directly.
+      **For Codex adapter:** The JSON `summary` field is the report; `success` is the result status.
+
+   f. **Commit verification** (run after every adapter, regardless of which was used):
+
+      After the adapter reports success or failure, verify the commit state:
+      ```bash
+      post_dispatch_head=$(git rev-parse HEAD 2>/dev/null || echo "")
+      git_status=$(git status --porcelain 2>/dev/null)
+      ```
+
+      - **HEAD moved AND working tree is clean** (`git_status` is empty): proceed normally — the task committed correctly.
+      - **HEAD did not move** (same sha as `pre_dispatch_head`) OR **uncommitted changes exist** (`git_status` is non-empty): attempt intelligent recovery:
+        1. Stage all changes: `git add -A`
+        2. Commit with a recovery message: `git commit -m "chore: recovery commit for task N/M"`
+        3. Record that recovery was needed; include details in the final summary under a "Commit Recovery" section.
+
+   g. **Handle success/failure**:
+
+      - **Success**: Mark the task complete by changing `- [ ]` to `- [x]` in the tasks file. Report token usage:
+
+        **Claude adapter** — read token usage from transcript:
         ```bash
         latest=$(ls -t "$HOME/.claude/projects/$(echo "$PWD" | tr '/.' '-')"/*/subagents/agent-*.jsonl 2>/dev/null | head -1)
         tokens=$([ -n "$latest" ] && grep '"usage"' "$latest" 2>/dev/null | tail -1 | \
           jq '.message.usage | (.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0)' 2>/dev/null)
         ```
-        If `tokens` is a valid positive number, abbreviate as `$(( (tokens + 500) / 1000 ))k` and show: "Task N/M complete (<N>k tokens)". If any step fails (no file, no usage entries, jq fails), or if `tokens` is empty or `0`, show: "Task N/M complete (unknown tokens)". Never block task execution for reporting failure.
-      - **Failure with questions**: Read the task file to understand context, answer what you can from the change artifacts, and retry with a fresh subagent including the answers
+
+        **Codex adapter** — read token usage from JSON output:
+        ```bash
+        tokens=$(echo "$codex_json_output" | jq '(.usage.inputTokens // 0) + (.usage.outputTokens // 0) + (.usage.cachedInputTokens // 0)' 2>/dev/null)
+        ```
+
+        For both adapters: if `tokens` is a valid positive number, abbreviate as `$(( (tokens + 500) / 1000 ))k` and show: "Task N/M complete (<N>k tokens)". If any step fails or `tokens` is empty or `0`, show: "Task N/M complete (unknown tokens)". Never block task execution for reporting failure.
+
+      - **Failure with questions**: Read the task file to understand context, answer what you can from the change artifacts, and retry with a fresh adapter invocation including the answers.
       - **Failure (blocker)**: Do NOT mark the task complete. Pause and ask the user for guidance:
         - Skip this task and continue
-        - Retry with a fresh subagent
+        - Retry with a fresh adapter invocation
         - Manual intervention
-        Show the failure details from the subagent's report.
+        Show the failure details from the adapter's report.
 
-4. **Show final status**
+6. **Show final status**
 
    After all tasks are processed (or paused):
    - Tasks completed this session
    - Overall progress: "N/M tasks complete"
+   - Adapter used: "<name>"
+   - If any commit recoveries occurred: list them under a "Commit Recovery" section
    - If all done: "All tasks complete! Ready to archive."
    - If paused: explain why and show options
 
-5. **Cleanup** (only when all tasks are complete)
+7. **Cleanup** (only when all tasks are complete)
 
    Delete the task context file:
    ```bash
@@ -88,21 +164,29 @@ Orchestrate subagent-driven task implementation for a structured change.
 
 ### Branch: <branch-name>
 
+Using adapter: claude
+
 Working on task 1/3: <task title>
-[...subagent dispatched...]
+[...adapter dispatched...]
 Task 1/3 complete (59k tokens)
 
 Working on task 2/3: <task title>
-[...subagent dispatched...]
+[...adapter dispatched...]
 Task 2/3 complete (unknown tokens)
 
 ---
 
 **Progress:** 2/3 tasks complete
+
+### Commit Recovery
+- Task 2/3: No commit detected after adapter returned success. Staged and committed remaining changes.
 ```
 
 **Guardrails**
-- One fresh subagent per task — never resume a previous subagent
-- Mark completion immediately after successful subagent return
+- One fresh adapter invocation per task — never resume a previous one
+- Check adapter availability before dispatching any task — stop early if unavailable and fallback is disabled
+- Record HEAD before each dispatch; verify HEAD moved and working tree is clean after each dispatch
+- Attempt recovery and report anomalies if commit verification fails — never silently skip
+- Mark completion immediately after successful adapter return and commit verification
 - Pause on any failure — never skip tasks silently
 - Process tasks strictly one at a time, in order — NEVER in parallel
