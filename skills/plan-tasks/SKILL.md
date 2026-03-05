@@ -42,11 +42,13 @@ Decide how many tasks this change requires and what each one covers. Do not writ
 
 **1 task = 1 meaningful, independently completable unit of work** — something you could describe with a single focused git commit message. Not a TDD micro-step. Not a vague epic.
 
+**Your default instinct is to over-split. Resist it.** Most changes need fewer tasks than you think. A change with 3 spec requirements is probably 1–2 tasks, not 3. A change with 6 requirements is probably 2–3 tasks, not 6. The number of spec requirements, design sections, or affected files does NOT determine the number of tasks — delivery units do.
+
 Apply these rules to identify your tasks:
 
 1. **Group by delivery unit** — what would a skilled full-stack engineer naturally commit together? Don't split by layer (don't separate "the config file" from "the code that uses it", or "the schema" from "the feature that requires it"). Requirements that implement the same capability end-to-end belong together even if they touch different layers.
 2. **Apply the merge test** — if two candidate tasks would always be committed together, have no independent value, and aren't separately review-worthy, merge them.
-3. **Check task size** — if a single task would take more than a half-day, consider splitting it at a genuine seam where the first part is independently releasable.
+3. **Apply the merge test again** — seriously, you probably still have too many tasks. For each pair of adjacent tasks, ask: "Would a senior engineer open two separate PRs for these, or one?" If one, merge them.
 4. **Check for specialization mismatch** — split only when a task spans domains requiring genuinely different specialists. A full-stack engineer handles most vertical slices.
 
 ### Task Splitting Examples and Anti-patterns
@@ -71,6 +73,20 @@ For small changes, a single task is fine. Don't manufacture fake granularity.
 **Anti-pattern: Separate doc-update tasks.** Don't create standalone tasks for documentation updates (README, guides, license files, etc.) when the docs are part of the same change as code or config. Update docs in the same task that introduces the related functionality. Only split docs into their own task when the documentation work is substantial and independent of any code change (e.g., a docs-only change).
 
 **Litmus test for infrastructure/config-only changes:** If all files being created/modified are prompt files, config files, skill definitions, or other non-compiled artifacts (no application code with runtime behavior), the entire change is likely one task. Prompt/config changes don't have the layer boundaries that justify splitting — they're all "infrastructure" in the same sense. Only split when tasks produce independently valuable, releasable functionality.
+
+### Confirm with the User Before Writing
+
+**Do not write any task files yet.** Present the user with a brief overview of your planned breakdown:
+
+1. State the number of tasks.
+2. For each task, give the title and a 1-sentence summary of its scope — what it delivers, not implementation details.
+3. Explain:
+
+> **Goldilocks task sizing:** Each task should be big enough to deliver a meaningful, independently completable unit of work (something worth its own commit and review), but small enough that a single agent can hold the full context and finish it in one session.
+
+4. Ask: _"Does this look like the right number and grouping? Would you like me to split or combine any of these before I write the detailed task files?"_
+
+**Wait for the user's response.** Adjust the plan if they request changes. Only proceed to Step 4 after confirmation.
 
 ---
 
