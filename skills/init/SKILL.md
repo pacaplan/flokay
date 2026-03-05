@@ -113,10 +113,10 @@ Configure which implementation adapter (codex or claude) the project should use.
 
 **First, check if config already exists:**
 
-Read `.claude/flokay.local.md` if it exists and check whether its YAML frontmatter contains an `implementation` key.
+Read `.claude/flokay.local.md` if it exists and check whether its YAML frontmatter contains `implementation.preference`.
 
-- **If `implementation` key exists** → skip this entire step (preserve existing config).
-- **If the file does not exist or has no `implementation` key** → proceed with detection below.
+- **If `implementation.preference` exists** → skip this entire step (preserve existing adapter config).
+- **If the file does not exist or `implementation.preference` is missing** → proceed with detection below.
 
 **Detect Codex CLI:**
 
@@ -125,7 +125,7 @@ which codex
 ```
 
 - If exit code is 0 → Codex is available.
-- If exit code is non-zero or the command errors → treat Codex as unavailable. Do not warn or error.
+- If exit code is non-zero or the command errors → treat Codex as unavailable. Do not warn or throw an error.
 
 **If Codex is available**, prompt the user using `AskUserQuestion`:
 

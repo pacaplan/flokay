@@ -1,7 +1,7 @@
 # adapter-config-init Specification
 
 ## Purpose
-TBD - created by archiving change address-pr16-skill-review. Update Purpose after archive.
+Define how the init skill detects available implementation adapters and writes adapter preferences to `.claude/flokay.local.md`.
 ## Requirements
 ### Requirement: Adapter Detection During Init
 The init skill SHALL check whether the Codex CLI is installed on the system.
@@ -37,6 +37,6 @@ The skill SHALL NOT prompt for adapter preferences if `.claude/flokay.local.md` 
 - **THEN** the skill skips the adapter detection and prompt entirely
 
 #### Scenario: Config file exists without adapter settings
-- **WHEN** `.claude/flokay.local.md` exists but has no `implementation` key in frontmatter
+- **WHEN** `.claude/flokay.local.md` exists but `implementation.preference` is missing in frontmatter
 - **THEN** the skill proceeds with detection and merges adapter config into the existing frontmatter
 
