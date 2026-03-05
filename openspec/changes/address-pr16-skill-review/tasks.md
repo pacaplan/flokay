@@ -1,1 +1,0 @@
-- [ ] Add adapter config step to init skill (`tasks/add-adapter-config-step.md`)
