@@ -152,6 +152,7 @@ which codex
   (Use the actual preference values determined above.)
 
 - **File exists but has no `implementation` key** → merge the `implementation` block into the existing YAML frontmatter, preserving all other keys and any body content below the frontmatter.
+- **File exists and has an `implementation` key but no `implementation.preference`** → merge only missing adapter fields into the existing `implementation` object: set `implementation.preference` to the detected/selected value and `implementation.fallback` to `true` if missing. Preserve any other existing `implementation.*` keys, all other frontmatter keys, and body content.
 
 ### 6. Update .gitignore
 
