@@ -1,0 +1,2 @@
+- [x] Create the invoke-codex.js helper script and verify end-to-end (`tasks/invoke-codex-script.md`)
+- [x] Add multi-adapter dispatch, config reading, and commit verification to implement-task skill (`tasks/implement-task-multi-adapter.md`)

@@ -1,2 +1,6 @@
 gauntlet_logs
 .gauntlet/current-task-context.md
+
+# External skills (pulled in locally, not committed)
+.claude/skills/gauntlet-*/
+.claude/skills/openspec-*/

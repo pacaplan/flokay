@@ -11,7 +11,14 @@ Commit all changes, push to the remote, and create or update the pull request fo
 
 ## Steps
 
-1. **Check for uncommitted changes** using `git status --porcelain`
+1. **Run gauntlet detection**
+   - Run `agent-gauntlet detect 2>&1`
+   - **Exit 0** → gates would run, invoke `flokay:gauntlet-run` and wait for it to pass before proceeding
+   - **Exit 2** → no gates would run (no changes or no applicable gates), skip to Step 2
+   - **Exit 1** → error, report the error to the user and stop
+   - **Any other exit code** → treat as error, report output to the user, and stop
+
+2. **Check for uncommitted changes** using `git status --porcelain`
    - If there are changes, create a commit:
      - Run `git diff --staged` and `git diff` to see what's changed
      - Generate a concise, descriptive commit message based on the changes
@@ -19,12 +26,12 @@ Commit all changes, push to the remote, and create or update the pull request fo
      - Commit with: `git commit -m "message" -m "Co-Authored-By: Claude <noreply@anthropic.com>"`
    - If there are no changes, proceed to push check
 
-2. **Push to remote**
+3. **Push to remote**
    - Get current branch: `git branch --show-current`
    - Push with upstream tracking: `git push -u origin <branch>`
    - If push fails, show the error and stop
 
-3. **Check if PR exists**
+4. **Check if PR exists**
    - Run `gh pr view --json url,title,state,number,headRefOid || true` to check for an existing PR; the command exits non-zero when no PR exists, so `|| true` prevents the step from stopping
    - If the output is empty or the command produced no JSON, treat it as no PR existing and proceed to creation
    - Otherwise, parse the `state` field from the JSON response
@@ -47,7 +54,7 @@ Commit all changes, push to the remote, and create or update the pull request fo
      - Create PR: `gh pr create --base <default-branch> --title "title" --body "description"`
      - Print the PR URL
 
-4. **Print the PR URL** at the end so it's easy to find
+5. **Print the PR URL** at the end so it's easy to find
 
 ## Notes
 
