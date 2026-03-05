@@ -4,3 +4,5 @@ gauntlet_logs
 # External skills (pulled in locally, not committed)
 .claude/skills/gauntlet-*/
 .claude/skills/openspec-*/
+
+.agents

@@ -107,7 +107,54 @@ schema: flokay
 - If it already says `schema: flokay`, do nothing — it's correct.
 - If it says something else (e.g., `schema: spec-driven`), update the `schema:` line to `schema: flokay`. Preserve all other lines in the file. Inform the user: "Updated openspec/config.yaml: schema changed from `<old>` to `flokay`."
 
-### 5. Update .gitignore
+### 5. Configure Adapter Preferences
+
+Configure which implementation adapter (codex or claude) the project should use. This step writes adapter preferences to `.claude/flokay.local.md`.
+
+**First, check if config already exists:**
+
+Read `.claude/flokay.local.md` if it exists and check whether its YAML frontmatter contains `implementation.preference`.
+
+- **If `implementation.preference` exists** → skip this entire step (preserve existing adapter config).
+- **If the file does not exist or `implementation.preference` is missing** → proceed with detection below.
+
+**Detect Codex CLI:**
+
+```bash
+which codex
+```
+
+- If exit code is 0 → Codex is available.
+- If exit code is non-zero or the command errors → treat Codex as unavailable. Do not warn or throw an error.
+
+**If Codex is available**, prompt the user using `AskUserQuestion`:
+
+> Which adapter would you like to use for implementation?
+>
+> 1. Codex (with Claude fallback)
+> 2. Claude only
+
+- If the user selects **"Codex (with Claude fallback)"** → set `preference: [codex, claude]` and `fallback: true`
+- If the user selects **"Claude only"** → set `preference: [claude]` and `fallback: true`
+
+**If Codex is not available**, silently default to `preference: [claude]` and `fallback: true` (no prompt).
+
+**Write the config to `.claude/flokay.local.md`:**
+
+- **File does not exist** → create it with YAML frontmatter:
+  ```markdown
+  ---
+  implementation:
+    preference: [codex, claude]
+    fallback: true
+  ---
+  ```
+  (Use the actual preference values determined above.)
+
+- **File exists but has no `implementation` key** → merge the `implementation` block into the existing YAML frontmatter, preserving all other keys and any body content below the frontmatter.
+- **File exists and has an `implementation` key but no `implementation.preference`** → merge only missing adapter fields into the existing `implementation` object: set `implementation.preference` to the detected/selected value and `implementation.fallback` to `true` if missing. Preserve any other existing `implementation.*` keys, all other frontmatter keys, and body content.
+
+### 6. Update .gitignore
 
 Ensure `.gauntlet/current-task-context.md` is listed in the consumer project's `.gitignore` (it is a transient working file that should never be committed).
 
@@ -116,7 +163,7 @@ Append it only if not already present:
 grep -qxF '.gauntlet/current-task-context.md' .gitignore 2>/dev/null || echo '.gauntlet/current-task-context.md' >> .gitignore
 ```
 
-### 6. Print Success
+### 7. Print Success
 
 Print a summary:
 
@@ -127,12 +174,18 @@ Schema installed at: openspec/schemas/flokay/
 Gauntlet reviews: artifact-review, task-compliance
 Gauntlet checks: openspec-validate
 Config at: openspec/config.yaml
+Adapter preference: <adapter summary>
 
 Next steps:
 1. Start a new change: /openspec-new-change "my-change"
 2. Continue the workflow: /openspec-continue-change
 3. See the user guide: docs/guide.md (in the flokay plugin)
 ```
+
+For the adapter preference line, show what was configured in step 5:
+- If codex was selected: "codex (with claude fallback)"
+- If claude only: "claude"
+- If step 5 was skipped (existing config): "already configured (skipped)"
 
 If there were warnings, list them again at the end so the user can address them.
 
