@@ -46,15 +46,7 @@ Tasks live at `openspec/changes/*/tasks.md` or `openspec/changes/*/tasks/`
 *   Every task traces back to a spec requirement?
 *   Ordering and grouping makes sense for implementation?
 
-#### 4b. Task granularity
-Apply the splitting rules, merge test, anti-patterns, and size guidance from the plan-tasks skill. Flag tasks that:
-*   Look like "laying the groundwork" (infrastructure with no testable behavioral value of its own)
-*   Split too finely by layer (e.g., schema separate from the feature that uses it)
-*   Bundle too much into one unit (would take more than a half-day)
-*   Separate doc updates that belong with the code change
-*   Split prompt/config-only changes into multiple tasks when one would suffice
-
-#### 4c. Task file structure
+#### 4b. Task file structure
 Read every task file in `tasks/`. Each one must follow the plan-tasks skill format:
 
 **Required sections (multi-task changes):**
