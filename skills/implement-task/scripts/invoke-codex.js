@@ -13,8 +13,8 @@
  *
  * Flags:
  *   --verbose                 Stream progress events to stderr (default: silent)
- *   --sandbox-mode <mode>     Codex sandbox mode (default: workspace-write-access)
- *   --approval-policy <pol>   Codex approval policy (default: auto)
+ *   --sandbox-mode <mode>     Codex sandbox mode (default: workspace-write)
+ *   --approval-policy <pol>   Codex approval policy (default: never)
  */
 
 import { execSync, spawnSync } from "child_process";
@@ -36,8 +36,8 @@ function parseArgs(argv) {
     cwd: process.cwd(),
     timeout: 0, // 0 = no timeout
     verbose: false,
-    sandboxMode: "workspace-write-access",
-    approvalPolicy: "auto",
+    sandboxMode: "workspace-write",
+    approvalPolicy: "never",
   };
 
   for (let i = 2; i < argv.length; i++) {

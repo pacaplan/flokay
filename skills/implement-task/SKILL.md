@@ -87,7 +87,7 @@ Orchestrate subagent-driven task implementation for a structured change.
       Invoke the helper via Bash, piping the combined prompt to stdin and capturing the JSON output:
       ```bash
       codex_json_output=$(echo "$combined_prompt" | node "${CLAUDE_SKILL_DIR}/scripts/invoke-codex.js" \
-        --cwd "$PWD" --timeout 600000)
+        --cwd "$PWD" --timeout 1800000)  # 30 minutes — long enough for full TDD cycles
       ```
       Parse `codex_json_output` as JSON to get `success`, `summary`, `filesChanged`, and `usage`.
 
