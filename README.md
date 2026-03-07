@@ -66,7 +66,7 @@ Then initialize Flokay in your project:
 
 Each step uses a dedicated skill (`flokay:propose`, `flokay:design`, `flokay:plan-tasks`, etc.) that guides you through the process conversationally.
 
-See [`docs/guide.md`](docs/guide.md) for the detailed user guide covering the full workflow, each artifact, and how to use the commands.
+See [`docs/guide.md`](docs/guide.md) for the detailed user guide, or the [annotated example](docs/example.md) for a full walkthrough.
 
 ## Updating
 

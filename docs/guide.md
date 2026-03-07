@@ -10,6 +10,8 @@ The workflow has two stages:
 
 2. **Implementation** — The agent takes the wheel. Walk away; come back to a pull request with tested, reviewed code and green CI.
 
+See the [annotated example](example.md) for a full walkthrough of both stages.
+
 ## Stage 1 — Planning
 
 Planning is collaborative. You and the agent think through what to build, why, and how — then break it into tasks and review everything before implementation. Each step has its own command with a human checkpoint before moving on.
