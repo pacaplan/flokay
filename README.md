@@ -13,7 +13,7 @@ Flokay is a Claude plugin that provides two things:
 
 You can adopt the full workflow, or use the skills individually as you see fit.
 
-![Flokay demo](docs/images/demo.gif)
+![Flokay demo](docs/images/demo2.gif)
 
 ## Workflow
 
