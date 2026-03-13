@@ -3,7 +3,6 @@ description: >
   Polls CI check status for the current branch's pull request and reports pass/fail/pending/comments,
   surfacing PR review comments even when CI is green.
   Use when the user says "wait for CI", "check CI", "poll CI", or invokes "flokay:wait-ci".
-allowed-tools: Bash
 ---
 
 # flokay:wait-ci

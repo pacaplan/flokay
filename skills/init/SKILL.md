@@ -40,14 +40,12 @@ If any CLI is missing or out of date, list all failures and stop. The user must 
 
 Copy the flokay schema from the plugin into the consumer's project.
 
-**Source** (relative to plugin root): `openspec/schemas/flokay/`
+**Source** (in the plugin's root directory): `openspec/schemas/flokay/`
 **Destination**: `openspec/schemas/flokay/` in the consumer's project
 
-```bash
-mkdir -p openspec/schemas/flokay/templates
-cp "${CLAUDE_PLUGIN_ROOT}/openspec/schemas/flokay/schema.yaml" openspec/schemas/flokay/schema.yaml
-cp "${CLAUDE_PLUGIN_ROOT}/openspec/schemas/flokay/templates/"*.md openspec/schemas/flokay/templates/
-```
+Copy the following files from the plugin's root directory to the consumer project:
+- `openspec/schemas/flokay/schema.yaml` → `openspec/schemas/flokay/schema.yaml`
+- All `openspec/schemas/flokay/templates/*.md` files → `openspec/schemas/flokay/templates/`
 
 This copies `schema.yaml` and all template files (`proposal.md`, `design.md`, `spec.md`, `tasks.md`, `review.md`).
 
@@ -59,13 +57,12 @@ Copy review prompts and check definitions from the plugin, then update the consu
 
 #### 3a. Copy review and check files
 
-```bash
-mkdir -p .gauntlet/reviews .gauntlet/checks
-cp "${CLAUDE_PLUGIN_ROOT}/.gauntlet/reviews/artifact-review.md" .gauntlet/reviews/artifact-review.md
-cp "${CLAUDE_PLUGIN_ROOT}/.gauntlet/reviews/task-compliance.md" .gauntlet/reviews/task-compliance.md
-# skill-quality.md intentionally omitted — it is a gauntlet-provided review, not flokay-specific
-cp "${CLAUDE_PLUGIN_ROOT}/.gauntlet/checks/openspec-validate.yml" .gauntlet/checks/openspec-validate.yml
-```
+Copy the following files from the plugin's root directory to the consumer project:
+- `.gauntlet/reviews/artifact-review.md` → `.gauntlet/reviews/artifact-review.md`
+- `.gauntlet/reviews/task-compliance.md` → `.gauntlet/reviews/task-compliance.md`
+- `.gauntlet/checks/openspec-validate.yml` → `.gauntlet/checks/openspec-validate.yml`
+
+(Note: `skill-quality.md` is intentionally omitted — it is a gauntlet-provided review, not flokay-specific.)
 
 Overwrite existing files — they are plugin-owned and updated on re-init (same policy as schema files).
 
@@ -143,4 +140,4 @@ Invoke `/gauntlet-commit skip` to commit the scaffolding files. Checks are skipp
 - Always overwrite schema files (they're plugin-owned)
 - Always overwrite gauntlet review and check files (they're plugin-owned)
 - Never overwrite `.gauntlet/config.yml` — only add/update entry points and reviews
-- Use `${CLAUDE_PLUGIN_ROOT}` to locate plugin files
+- Use the hosting runtime's native mechanism to locate the plugin's root directory

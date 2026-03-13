@@ -33,19 +33,13 @@ Orchestrate subagent-driven task implementation for a structured change.
 
    a. **Announce**: "Working on task N/M: <task title>"
 
-   b. **Read the implementer prompt** at `${CLAUDE_PLUGIN_ROOT}/skills/implement-task/implementer-prompt.md`
+   b. **Read the implementer prompt** from the file `implementer-prompt.md` in this skill's directory.
 
-   c. **Dispatch subagent** using the Task tool:
-      ```yaml
-      subagent_type: "general-purpose"
-      model: "sonnet"
-      prompt: <contents of implementer-prompt.md, with TASK_FILE_PATH replaced by the actual task file path>
-      ```
+   c. **Spawn a fresh subagent** with the contents of `implementer-prompt.md` as the prompt, replacing `TASK_FILE_PATH` with the actual task file path.
 
       **Important**:
       - Each task gets a FRESH subagent (do not resume previous ones)
-      - Do NOT use `isolation: "worktree"` — subagent works on the current branch
-      - NEVER use `run_in_background: true` or `TaskOutput`. Always use synchronous Task calls. Background subagents have a known bug that returns garbage instead of the actual answer.
+      - Execute synchronously — wait for the subagent to return before proceeding
       - Execute tasks one at a time, in order — NEVER dispatch multiple tasks in parallel
 
    d. **Handle response**:

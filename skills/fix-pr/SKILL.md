@@ -3,7 +3,6 @@ description: >
   Fixes CI failures and review comments on the current branch's pull request by dispatching
   a fixer subagent, verifying with gauntlet, and pushing the fix. Use when the user says
   "fix pr", "fix CI failures", "address review comments", or invokes "flokay:fix-pr".
-allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Task
 ---
 
 # flokay:fix-pr
@@ -73,7 +72,7 @@ Fix CI failures and review comments on the current branch's PR by dispatching a 
 
 3. **Dispatch fixer subagent**
 
-   Read the fixer prompt at `${CLAUDE_PLUGIN_ROOT}/skills/fix-pr/fixer-prompt.md`.
+   Read the file `fixer-prompt.md` in this skill's directory.
 
    Substitute the following variables into the prompt:
    - `PR_URL` — the PR URL
@@ -81,17 +80,10 @@ Fix CI failures and review comments on the current branch's PR by dispatching a 
    - `FAILED_CHECKS_CONTEXT` — structured list of failed checks with log output
    - `REVIEW_COMMENTS_CONTEXT` — structured list of review comments
 
-   Dispatch a fresh subagent using the Task tool:
-
-   ```yaml
-   subagent_type: "general-purpose"
-   model: "sonnet"
-   prompt: <contents of fixer-prompt.md with variables substituted>
-   ```
+   Spawn a fresh subagent with the following prompt (the contents of `fixer-prompt.md` with variables substituted):
 
    **Important:**
-   - Dispatch ONE fresh subagent — do NOT resume previous ones
-   - Do NOT use `run_in_background: true`
+   - Spawn ONE fresh subagent — do NOT resume previous ones
    - Execute synchronously — wait for the subagent to return
 
 4. **Verify the fix with gauntlet**

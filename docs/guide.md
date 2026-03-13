@@ -1,6 +1,6 @@
 # Flokay User Guide
 
-Flokay is a spec-driven development workflow for Claude Code. It structures every change as a sequence of artifacts — each one building on the last — so you think through what you're building before writing code.
+Flokay is a spec-driven development workflow for Claude Code and Cursor. It structures every change as a sequence of artifacts — each one building on the last — so you think through what you're building before writing code.
 
 ## The Workflow
 
@@ -128,13 +128,20 @@ This adds `gauntlet-*` skills to `.claude/skills/`.
 
 ### 3. Flokay Plugin
 
-Install the plugin:
+**Claude Code:**
 
 ```bash
-claude plugin install pacaplan/flokay
+claude plugin marketplace add pacaplan/flokay
+claude plugin install flokay
 ```
 
-Initialize Flokay in your project:
+**Cursor:**
+
+```bash
+cursor plugins install pacaplan/flokay
+```
+
+Initialize Flokay in your project (same command in both runtimes):
 
 ```text
 /flokay:init
@@ -166,6 +173,20 @@ your-project/
 │       └── gauntlet-*/
 └── ...
 ```
+
+## Runtime Differences: Claude Code vs Cursor
+
+Flokay works identically in both Claude Code and Cursor. Skills are invoked with the same `/flokay:<skill-name>` syntax in both runtimes (for example, `/flokay:propose`, `/flokay:implement-task`).
+
+The only runtime-specific differences are in installation:
+
+| | Claude Code | Cursor |
+|---|---|---|
+| Install | `claude plugin install flokay` | `cursor plugins install pacaplan/flokay` or `/add-plugin` |
+| Init | `/flokay:init` | `/flokay:init` |
+| Skill invocation | `/flokay:<skill-name>` | `/flokay:<skill-name>` |
+
+All workflow steps, skill behavior, artifact formats, and quality gates are identical across both runtimes.
 
 ## Tips
 

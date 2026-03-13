@@ -2,7 +2,6 @@
 description: >
   Commits changes, pushes to remote, and creates or updates a pull request for the current branch.
   Use when the user says "push pr", "create pr", "push and create pr", or invokes "flokay:push-pr".
-allowed-tools: Bash
 ---
 
 # flokay:push-pr

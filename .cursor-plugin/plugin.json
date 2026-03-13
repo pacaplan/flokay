@@ -1,0 +1,9 @@
+{
+  "name": "flokay",
+  "displayName": "Flokay",
+  "version": "0.5.0",
+  "description": "A curated, spec-driven development workflow — proposal, design, specs, tasks, review, implement.",
+  "author": "pacaplan",
+  "license": "MIT",
+  "keywords": ["workflow", "spec-driven", "tdd", "planning", "implementation", "openspec", "gauntlet"]
+}

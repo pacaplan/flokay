@@ -6,7 +6,7 @@
 
 ## Overview
 
-Flokay is a Claude plugin that provides two things:
+Flokay is a plugin for Claude Code and Cursor that provides two things:
 
 1. **Agent Skills** — a set of focused skills for each stage of development, from evaluating an idea to implementing with subagents (or Codex) to shepherding a PR through CI. Inspired by [obra/superpowers](https://github.com/obra/superpowers).
 2. **A structured workflow** — an opinionated, spec-driven workflow powered by those skills, [OpenSpec](https://github.com/fission-ai/OpenSpec), and the [Agent Gauntlet](https://github.com/pacaplan/agent-gauntlet) validation tool.
@@ -46,14 +46,26 @@ Flokay requires two external CLIs and their skills:
 
 ## Installation
 
-In Claude Code, add the Flokay marketplace and install the plugin:
+### Claude Code
+
+Add the Flokay marketplace and install the plugin:
 
 ```bash
-  claude plugin marketplace add pacaplan/flokay
-  claude plugin install flokay
+claude plugin marketplace add pacaplan/flokay
+claude plugin install flokay
 ```
 
-Then initialize Flokay in your project:
+### Cursor
+
+Install the plugin using `/add-plugin` in chat or the CLI:
+
+```bash
+cursor plugins install pacaplan/flokay
+```
+
+### Initialize
+
+After installing with either runtime, initialize Flokay in your project:
 
 ```text
 /flokay:init

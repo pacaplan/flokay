@@ -4,7 +4,6 @@ description: >
   until CI passes or termination rules trigger a pause.
   This skill should be used when the user says "ship it", "finalize pr", "push and fix CI",
   "push pr and wait for CI", or invokes "flokay:finalize-pr".
-allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Task, Skill
 ---
 
 # flokay:finalize-pr
