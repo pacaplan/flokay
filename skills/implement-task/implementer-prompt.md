@@ -59,7 +59,7 @@ After self-review passes, run gauntlet directly using the steps below. Do NOT in
 
 3. **Run gauntlet with output captured to a file** (Bun can drop stdout/stderr during LLM review subprocesses, so always redirect to a file):
    ```bash
-   agent-gauntlet run --enable-review task-compliance > gauntlet_logs/_subagent-run.log 2>&1; echo "GAUNTLET_EXIT=$?"
+   agent-gauntlet run --enable-review task-compliance > gauntlet_logs/_subagent-run.log 2>&1; printf 'GAUNTLET_EXIT=%s\n' "$?" >> gauntlet_logs/_subagent-run.log
    ```
    Use `Bash` with `timeout: 300000` (5 minutes). Do NOT use `run_in_background`.
 
@@ -79,7 +79,7 @@ After self-review passes, run gauntlet directly using the steps below. Do NOT in
    - `Status: Retry limit exceeded` → stop and include the failure details in your report
    - **No `Status:` line found** → the output file may be empty (known Bun issue). Read the latest console log instead:
      ```bash
-     ls -t gauntlet_logs/console.*.log 2>/dev/null | head -1 | xargs cat
+     ls -t gauntlet_logs/console.*.log 2>/dev/null | head -1 | xargs -r cat
      ```
      If no console log exists either, re-run the command once more (go back to step 3).
 
